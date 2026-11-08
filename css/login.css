@@ -1,0 +1,243 @@
+/* css/login.css - الملف المحدث للواجهة الجديدة */
+:root {
+    --primary-color: #667eea;
+    --secondary-color: #764ba2;
+    --success-color: #28a745;
+    --danger-color: #dc3545;
+    --warning-color: #ffc107;
+    --info-color: #17a2b8;
+    --light-color: #f8f9fa;
+    --dark-color: #343a40;
+    --card-bg: rgba(255, 255, 255, 0.95);
+    --shadow-color: rgba(0, 0, 0, 0.1);
+}
+
+/* Base Styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', 'Cairo', Tahoma, Geneva, Verdana, sans-serif;
+    line-height: 1.6;
+}
+
+/* Card Animations */
+.login-card {
+    animation: cardLoad 0.8s ease-out;
+}
+
+@keyframes cardLoad {
+    from {
+        opacity: 0;
+        transform: translateY(50px) scale(0.95);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+/* Button Effects */
+.btn-primary {
+    position: relative;
+    overflow: hidden;
+    transition: all 0.3s ease;
+}
+
+.btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3) !important;
+}
+
+/* Alert Animations */
+.alert {
+    animation: slideIn 0.3s ease;
+}
+
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateX(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+/* Form Focus Effects */
+.form-control:focus, .form-select:focus {
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.2) !important;
+    transform: translateY(-2px);
+}
+
+/* Password Strength Indicator */
+.password-strength {
+    height: 4px;
+    margin-top: 5px;
+    border-radius: 2px;
+    transition: all 0.3s ease;
+}
+
+.strength-weak {
+    background: var(--danger-color);
+    width: 33%;
+}
+
+.strength-medium {
+    background: var(--warning-color);
+    width: 66%;
+}
+
+.strength-strong {
+    background: var(--success-color);
+    width: 100%;
+}
+
+/* Contact Links Hover Effects */
+.contact-link {
+    transition: all 0.3s ease;
+}
+
+.contact-link:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1) !important;
+}
+
+.contact-link.phone:hover {
+    background: #25d366 !important;
+    color: white !important;
+    border-color: #25d366 !important;
+}
+
+.contact-link.whatsapp:hover {
+    background: #25d366 !important;
+    color: white !important;
+    border-color: #25d366 !important;
+}
+
+/* Footer */
+.page-footer {
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* Loading Spinner */
+@keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+.fa-spinner {
+    animation: spin 1s linear infinite;
+}
+
+/* Shake Animation for Errors */
+@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+    20%, 40%, 60%, 80% { transform: translateX(5px); }
+}
+
+.shake {
+    animation: shake 0.5s ease;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .login-card {
+        margin: 10px;
+        border-radius: 20px;
+    }
+    
+    .system-name {
+        font-size: 1.8rem !important;
+    }
+    
+    .nav-tabs .nav-link {
+        padding: 15px !important;
+        font-size: 1rem !important;
+    }
+    
+    .contact-links {
+        flex-direction: column;
+        gap: 10px;
+    }
+    
+    .contact-link {
+        width: 100%;
+        min-width: 100% !important;
+    }
+    
+    .footer-content {
+        flex-direction: column;
+        text-align: center;
+        gap: 10px;
+    }
+    
+    .copyright, .programmer, .center-text {
+        width: 100%;
+        text-align: center;
+    }
+}
+
+/* Tab Navigation Active State */
+.nav-tabs .nav-link.active {
+    color: var(--primary-color) !important;
+    font-weight: 600;
+}
+
+.nav-tabs .nav-link.active::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 3px;
+    background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+    width: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.1);
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(135deg, var(--secondary-color), var(--primary-color));
+}
+
+/* Print Styles */
+@media print {
+    .login-card {
+        box-shadow: none !important;
+        border: 1px solid #ddd;
+    }
+    
+    .btn, .nav-tabs, .theme-switch, .contact-links {
+        display: none !important;
+    }
+}
+
+/* Utility Classes */
+.text-gradient {
+    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.shadow-soft {
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08) !important;
+}
