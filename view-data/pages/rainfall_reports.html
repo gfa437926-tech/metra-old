@@ -1,0 +1,1727 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>نظام مراقبة الأمطار - المحافظات السورية</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: "Segoe UI", "Tahoma", "Geneva", "Verdana", sans-serif;
+      }
+
+      body {
+        background: linear-gradient(135deg, #0c2461 0%, #1e3799 100%);
+        color: #333;
+        min-height: 100vh;
+        padding: 20px;
+      }
+
+      .container {
+        max-width: 1400px;
+        margin: 0 auto;
+        background-color: rgba(255, 255, 255, 0.98);
+        border-radius: 20px;
+        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.4);
+        overflow: hidden;
+      }
+
+      .header {
+        background: linear-gradient(to right, #1a2980, #26d0ce);
+        color: white;
+        padding: 25px 40px;
+        text-align: center;
+        border-bottom: 5px solid #3498db;
+        position: relative;
+      }
+
+      .header h1 {
+        font-size: 2.3rem;
+        margin-bottom: 10px;
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+      }
+
+      .header p {
+        font-size: 1.1rem;
+        opacity: 0.95;
+        max-width: 800px;
+        margin: 0 auto;
+        line-height: 1.6;
+      }
+
+      .header-badge {
+        position: absolute;
+        top: 20px;
+        left: 40px;
+        background: rgba(255, 255, 255, 0.2);
+        padding: 8px 15px;
+        border-radius: 20px;
+        font-size: 0.9rem;
+        backdrop-filter: blur(10px);
+      }
+
+      .controls {
+        padding: 20px 40px;
+        background-color: #f8f9fa;
+        border-bottom: 1px solid #dee2e6;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 15px;
+      }
+
+      .date-info {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        flex-wrap: wrap;
+      }
+
+      .date-selector {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+
+      .date-selector label {
+        font-weight: bold;
+        color: #2c3e50;
+        white-space: nowrap;
+      }
+
+      .date-selector input {
+        padding: 8px 15px;
+        border: 2px solid #3498db;
+        border-radius: 8px;
+        font-size: 1rem;
+        min-width: 180px;
+      }
+
+      .hijri-date {
+        color: #2c3e50;
+        font-weight: bold;
+        padding: 8px 15px;
+        background: linear-gradient(to right, #e3f2fd, #bbdefb);
+        border-radius: 8px;
+        font-size: 0.95rem;
+        border: 1px solid #90caf9;
+      }
+
+      .control-buttons {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+      }
+
+      .btn {
+        color: white;
+        border: none;
+        padding: 10px 25px;
+        border-radius: 8px;
+        cursor: pointer;
+        font-size: 1rem;
+        font-weight: bold;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 6px rgba(50, 50, 93, 0.11);
+      }
+
+      .refresh-btn {
+        background: linear-gradient(to right, #3498db, #2980b9);
+      }
+
+      .export-btn {
+        background: linear-gradient(to right, #27ae60, #219653);
+      }
+
+      .calculate-btn {
+        background: linear-gradient(to right, #9b59b6, #8e44ad);
+      }
+
+      .btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 7px 14px rgba(50, 50, 93, 0.1);
+      }
+
+      .refresh-btn:hover {
+        background: linear-gradient(to right, #2980b9, #1c5a87);
+      }
+
+      .export-btn:hover {
+        background: linear-gradient(to right, #219653, #1e8449);
+      }
+
+      .calculate-btn:hover {
+        background: linear-gradient(to right, #8e44ad, #7d3c98);
+      }
+
+      .btn:active {
+        transform: translateY(0);
+      }
+
+      .btn i {
+        font-size: 1.1rem;
+      }
+
+      .filters {
+        padding: 15px 40px;
+        background-color: #f1f8ff;
+        border-bottom: 1px solid #dee2e6;
+        display: flex;
+        gap: 20px;
+        flex-wrap: wrap;
+        align-items: center;
+      }
+
+      .filter-group {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+
+      .filter-group label {
+        font-weight: bold;
+        color: #2c3e50;
+      }
+
+      .filter-group select {
+        padding: 8px 15px;
+        border: 2px solid #3498db;
+        border-radius: 8px;
+        font-size: 1rem;
+        min-width: 150px;
+        background-color: white;
+      }
+
+      .table-container {
+        padding: 0;
+        overflow-x: auto;
+        max-height: 650px;
+        position: relative;
+      }
+
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        min-width: 1300px;
+      }
+
+      thead {
+        background: linear-gradient(to right, #2c3e50, #34495e);
+        color: white;
+        position: sticky;
+        top: 0;
+        z-index: 10;
+      }
+
+      th {
+        padding: 18px 15px;
+        text-align: center;
+        font-weight: bold;
+        font-size: 1.1rem;
+        border-right: 1px solid rgba(255, 255, 255, 0.1);
+        white-space: nowrap;
+        position: relative;
+      }
+
+      th.sortable {
+        cursor: pointer;
+      }
+
+      th.sortable:hover {
+        background: rgba(255, 255, 255, 0.1);
+      }
+
+      th .sort-icon {
+        margin-right: 5px;
+        opacity: 0.6;
+      }
+
+      th:first-child {
+        text-align: right;
+        padding-right: 30px;
+      }
+
+      th:last-child {
+        border-right: none;
+      }
+
+      tbody tr {
+        border-bottom: 1px solid #e1e5eb;
+        transition: all 0.2s ease;
+      }
+
+      tbody tr:hover {
+        background-color: #f0f7ff !important;
+        transform: scale(1.002);
+        box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
+      }
+
+      tbody tr:nth-child(even) {
+        background-color: #f9f9f9;
+      }
+
+      td {
+        padding: 16px 15px;
+        text-align: center;
+        font-size: 1rem;
+      }
+
+      .station-cell {
+        font-weight: bold;
+        color: #2c3e50;
+        text-align: right;
+        padding-right: 30px;
+        font-size: 1.05rem;
+        position: relative;
+      }
+
+      .station-governorate {
+        display: block;
+        font-size: 0.85rem;
+        color: #7f8c8d;
+        font-weight: normal;
+        margin-top: 3px;
+      }
+
+      .rain-amount {
+        font-weight: bold;
+        font-size: 1.15rem;
+      }
+
+      .no-data {
+        color: #e74c3c;
+        font-style: italic;
+        opacity: 0.7;
+      }
+
+      .has-data {
+        color: #27ae60;
+        font-weight: bold;
+      }
+
+      .calculated-data {
+        color: #3498db;
+        font-weight: bold;
+      }
+
+      .historical-data {
+        color: #9b59b6;
+      }
+
+      .data-source {
+        font-size: 0.9rem;
+        color: #666;
+      }
+
+      .loading {
+        padding: 40px;
+        text-align: center;
+        color: #7f8c8d;
+        font-size: 1.2rem;
+      }
+
+      .loading-spinner {
+        border: 5px solid #f3f3f3;
+        border-top: 5px solid #3498db;
+        border-radius: 50%;
+        width: 50px;
+        height: 50px;
+        animation: spin 1s linear infinite;
+        margin: 20px auto;
+      }
+
+      @keyframes spin {
+        0% {
+          transform: rotate(0deg);
+        }
+        100% {
+          transform: rotate(360deg);
+        }
+      }
+
+      .footer {
+        padding: 20px 40px;
+        background-color: #f8f9fa;
+        border-top: 1px solid #dee2e6;
+        text-align: center;
+        color: #6c757d;
+        font-size: 0.9rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 10px;
+      }
+
+      .stats {
+        display: flex;
+        gap: 20px;
+        flex-wrap: wrap;
+      }
+
+      .stat-item {
+        padding: 5px 15px;
+        background: #e3f2fd;
+        border-radius: 5px;
+        font-weight: bold;
+      }
+
+      .last-update {
+        color: #3498db;
+        font-weight: bold;
+        font-size: 1rem;
+      }
+
+      .data-source-info {
+        font-size: 0.85rem;
+        opacity: 0.8;
+      }
+
+      .legend {
+        display: flex;
+        gap: 15px;
+        flex-wrap: wrap;
+        justify-content: center;
+        margin-top: 5px;
+      }
+
+      .legend-item {
+        display: flex;
+        align-items: center;
+        gap: 5px;
+        font-size: 0.85rem;
+      }
+
+      .legend-color {
+        width: 12px;
+        height: 12px;
+        border-radius: 2px;
+      }
+
+      .legend-rain {
+        background-color: #27ae60;
+      }
+
+      .legend-snow {
+        background-color: #3498db;
+      }
+
+      .legend-historical {
+        background-color: #9b59b6;
+      }
+
+      .legend-missing {
+        background-color: #e74c3c;
+      }
+
+      .legend-calculated {
+        background-color: #f39c12;
+      }
+
+      @media (max-width: 768px) {
+        .container {
+          border-radius: 10px;
+        }
+
+        .header {
+          padding: 20px;
+        }
+
+        .header h1 {
+          font-size: 1.8rem;
+        }
+
+        .header p {
+          font-size: 1rem;
+        }
+
+        .header-badge {
+          position: static;
+          margin-bottom: 10px;
+          width: fit-content;
+          margin-left: auto;
+          margin-right: auto;
+        }
+
+        .controls {
+          padding: 15px 20px;
+          flex-direction: column;
+          align-items: stretch;
+          gap: 20px;
+        }
+
+        .date-info {
+          flex-direction: column;
+          align-items: flex-start;
+          gap: 10px;
+        }
+
+        .date-selector {
+          width: 100%;
+          justify-content: space-between;
+        }
+
+        .date-selector input {
+          flex-grow: 1;
+        }
+
+        .control-buttons {
+          width: 100%;
+        }
+
+        .btn {
+          flex: 1;
+          justify-content: center;
+        }
+
+        .filters {
+          padding: 15px 20px;
+          flex-direction: column;
+          align-items: stretch;
+        }
+
+        .filter-group {
+          width: 100%;
+          justify-content: space-between;
+        }
+
+        .filter-group select {
+          flex-grow: 1;
+        }
+
+        .footer {
+          flex-direction: column;
+          text-align: center;
+          gap: 15px;
+        }
+
+        .stats {
+          justify-content: center;
+        }
+
+        .legend {
+          justify-content: center;
+        }
+      }
+
+      /* تخصيص شريط التمرير */
+      ::-webkit-scrollbar {
+        width: 10px;
+        height: 10px;
+      }
+
+      ::-webkit-scrollbar-track {
+        background: #f1f1f1;
+        border-radius: 5px;
+      }
+
+      ::-webkit-scrollbar-thumb {
+        background: linear-gradient(to bottom, #3498db, #2980b9);
+        border-radius: 5px;
+      }
+
+      ::-webkit-scrollbar-thumb:hover {
+        background: linear-gradient(to bottom, #2980b9, #1c5a87);
+      }
+
+      /* تأثيرات للقيم العالية */
+      .high-rain {
+        background-color: rgba(52, 152, 219, 0.1);
+        border-left: 3px solid #3498db;
+      }
+
+      .very-high-rain {
+        background-color: rgba(155, 89, 182, 0.1);
+        border-left: 3px solid #9b59b6;
+        font-weight: bold;
+      }
+
+      .snow-present {
+        background-color: rgba(52, 152, 219, 0.05);
+      }
+
+      .calculated-row {
+        background-color: rgba(243, 156, 18, 0.05);
+      }
+
+      /* أدوات المحطة */
+      .station-tools {
+        position: absolute;
+        left: 10px;
+        top: 50%;
+        transform: translateY(-50%);
+        display: flex;
+        gap: 5px;
+        opacity: 0;
+        transition: opacity 0.3s;
+      }
+
+      .station-cell:hover .station-tools {
+        opacity: 1;
+      }
+
+      .station-tool-btn {
+        background: none;
+        border: none;
+        color: #3498db;
+        cursor: pointer;
+        font-size: 0.9rem;
+        padding: 2px 5px;
+        border-radius: 3px;
+        transition: all 0.2s;
+      }
+
+      .station-tool-btn:hover {
+        background: #3498db;
+        color: white;
+      }
+    </style>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+  </head>
+  <body>
+    <div class="container">
+      <div class="header">
+        <div class="header-badge">
+          <i class="fas fa-database"></i> النظام المطري المتكامل
+        </div>
+        <h1>
+          <i class="fas fa-cloud-rain"></i> نظام مراقبة الأمطار - المحافظات
+          السورية
+        </h1>
+        <p>
+          عرض كمية الأمطار خلال 24 ساعة مع حسابات الثلج والأمطار الموسمية
+          والمعدلات السنوية - البيانات من النشرات الساعية والتقارير اليومية
+        </p>
+      </div>
+
+      <div class="controls">
+        <div class="date-info">
+          <div class="date-selector">
+            <label for="reportDate"
+              ><i class="fas fa-calendar-alt"></i> تاريخ التقرير:</label
+            >
+            <input type="date" id="reportDate" value="" />
+          </div>
+          <div id="hijriDate" class="hijri-date"></div>
+        </div>
+
+        <div class="control-buttons">
+          <button
+            class="btn calculate-btn"
+            id="calculateBtn"
+            title="حساب البيانات المفقودة من النشرات الساعية"
+          >
+            <i class="fas fa-calculator"></i> حساب البيانات
+          </button>
+          <button class="btn export-btn" id="exportBtn">
+            <i class="fas fa-file-export"></i> تصدير Excel
+          </button>
+          <button class="btn refresh-btn" id="refreshBtn">
+            <i class="fas fa-sync-alt"></i> تحديث
+          </button>
+        </div>
+      </div>
+
+      <div class="filters">
+        <div class="filter-group">
+          <label for="governorateFilter"
+            ><i class="fas fa-filter"></i> المحافظة:</label
+          >
+          <select id="governorateFilter">
+            <option value="all">جميع المحافظات</option>
+          </select>
+        </div>
+        <div class="filter-group">
+          <label for="dataFilter"
+            ><i class="fas fa-database"></i> حالة البيانات:</label
+          >
+          <select id="dataFilter">
+            <option value="all">جميع البيانات</option>
+            <option value="hasData">بيانات متوفرة</option>
+            <option value="noData">بيانات مفقودة</option>
+            <option value="calculated">بيانات محسوبة</option>
+          </select>
+        </div>
+        <div class="filter-group">
+          <label for="rainFilter"
+            ><i class="fas fa-tint"></i> كمية الأمطار:</label
+          >
+          <select id="rainFilter">
+            <option value="all">جميع الكميات</option>
+            <option value="high">عالية (أكثر من 20 ملم)</option>
+            <option value="medium">متوسطة (10-20 ملم)</option>
+            <option value="low">منخفضة (أقل من 10 ملم)</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="table-container">
+        <table id="rainfallTable">
+          <thead>
+            <tr>
+              <th width="18%" class="sortable" data-sort="station">
+                <span class="sort-icon"><i class="fas fa-sort"></i></span>
+                المحافظة / المحطة
+              </th>
+              <th width="12%" class="sortable" data-sort="rain24h">
+                <span class="sort-icon"><i class="fas fa-sort"></i></span>
+                الأمطار 24 ساعة (مم)
+              </th>
+              <th width="12%" class="sortable" data-sort="snow">
+                <span class="sort-icon"><i class="fas fa-sort"></i></span>
+                الثلج × 0.8 (سم)
+              </th>
+              <th width="12%">مصدر البيانات</th>
+              <th width="12%" class="sortable" data-sort="seasonal">
+                <span class="sort-icon"><i class="fas fa-sort"></i></span>
+                أمطار الموسم (مم)
+              </th>
+              <th width="11%" class="sortable" data-sort="lastYear">
+                <span class="sort-icon"><i class="fas fa-sort"></i></span>
+                العام الماضي (مم)
+              </th>
+              <th width="11%" class="sortable" data-sort="annual">
+                <span class="sort-icon"><i class="fas fa-sort"></i></span>
+                المعدل السنوي (مم)
+              </th>
+              <th width="12%">الحالة</th>
+            </tr>
+          </thead>
+          <tbody id="tableBody">
+            <!-- البيانات سيتم إضافتها هنا بواسطة JavaScript -->
+          </tbody>
+        </table>
+      </div>
+
+      <div class="footer">
+        <div class="stats">
+          <div class="stat-item" id="totalStations">
+            <i class="fas fa-map-marker-alt"></i> إجمالي المحطات: <span>0</span>
+          </div>
+          <div class="stat-item" id="stationsWithData">
+            <i class="fas fa-check-circle"></i> محطات ببيانات: <span>0</span>
+          </div>
+          <div class="stat-item" id="totalRainfall">
+            <i class="fas fa-tint"></i> مجموع الأمطار: <span>0.0</span> ملم
+          </div>
+        </div>
+
+        <div class="update-info">
+          <p>
+            آخر تحديث: <span class="last-update" id="lastUpdate">--:--</span>
+          </p>
+          <p class="data-source-info">
+            المصدر: نظام النشرات الجوية السورية - قاعدة بيانات Supabase
+          </p>
+        </div>
+
+        <div class="legend">
+          <div class="legend-item">
+            <div class="legend-color legend-rain"></div>
+            <span>أمطار مسجلة</span>
+          </div>
+          <div class="legend-item">
+            <div class="legend-color legend-snow"></div>
+            <span>ثلج محسوب</span>
+          </div>
+          <div class="legend-item">
+            <div class="legend-color legend-calculated"></div>
+            <span>بيانات محسوبة</span>
+          </div>
+          <div class="legend-item">
+            <div class="legend-color legend-missing"></div>
+            <span>بيانات مفقودة</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="js/protect.js"></script>
+
+    <script>
+      // بيانات Supabase
+      const SUPABASE_URL = "https://vktcvkwqszehgmhqjrkb.supabase.co";
+      const SUPABASE_ANON_KEY =
+        "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZrdGN2a3dxc3plaGdtaHFqcmtiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjIxNzE3NTEsImV4cCI6MjA3Nzc0Nzc1MX0.KTX1c8BAJpy1Jp3-IDXFRqb4Jo7SLabiwICBtn_mR5o";
+
+      // تهيئة عميل Supabase
+      const supabaseClient = window.supabase.createClient(
+        SUPABASE_URL,
+        SUPABASE_ANON_KEY,
+      );
+
+      // قائمة المحطات بالترتيب المطلوب مع المحافظات
+      const stations = [
+        { name: "دمشق", governorate: "دمشق" },
+        { name: "مطار دمشق الدولي", governorate: "ريف دمشق" },
+        { name: "حمينة", governorate: "ريف دمشق" },
+        { name: "ريف دمشق", governorate: "ريف دمشق" },
+        { name: "القنيطرة", governorate: "القنيطرة" },
+        { name: "درعا", governorate: "درعا" },
+        { name: "السويداء", governorate: "السويداء" },
+        { name: "حمص", governorate: "حمص" },
+        { name: "حماة", governorate: "حماة" },
+        { name: "السلمية", governorate: "حماة" },
+        { name: "مطار حلب الدولي", governorate: "حلب" },
+        { name: "حلب الجامعة", governorate: "حلب" },
+        { name: "جرابلس", governorate: "حلب" },
+        { name: "دارت عزة", governorate: "حلب" },
+        { name: "إدلب", governorate: "إدلب" },
+        { name: "سرمدا", governorate: "إدلب" },
+        { name: "اللاذقية", governorate: "اللاذقية" },
+        { name: "القرداحة", governorate: "اللاذقية" },
+        { name: "طرطوس", governorate: "طرطوس" },
+        { name: "بانياس", governorate: "طرطوس" },
+        { name: "القدموس", governorate: "طرطوس" },
+        { name: "الحسكة", governorate: "الحسكة" },
+        { name: "دير الزور", governorate: "دير الزور" },
+        { name: "الرقة", governorate: "الرقة" },
+      ];
+
+      // بيانات معدلات سنوية تاريخية
+      const annualAverages = {
+        دمشق: 200,
+        "مطار دمشق الدولي": 180,
+        حمينة: 220,
+        "ريف دمشق": 190,
+        القنيطرة: 350,
+        درعا: 250,
+        السويداء: 280,
+        حمص: 300,
+        حماة: 320,
+        السلمية: 280,
+        "مطار حلب الدولي": 380,
+        "حلب الجامعة": 400,
+        جرابلس: 350,
+        "دارت عزة": 320,
+        إدلب: 450,
+        سرمدا: 420,
+        اللاذقية: 800,
+        القرداحة: 900,
+        طرطوس: 850,
+        بانياس: 820,
+        القدموس: 780,
+        الحسكة: 280,
+        "دير الزور": 150,
+        الرقة: 120,
+      };
+
+      // تهيئة المتغيرات
+      let currentData = [];
+      let sortDirection = {};
+
+      // تعيين تاريخ اليوم كتاريخ افتراضي
+      document.addEventListener("DOMContentLoaded", function () {
+        const today = new Date();
+        const yesterday = new Date(today);
+        yesterday.setDate(yesterday.getDate() - 1);
+
+        // استخدام تاريخ الأمس كتاريخ افتراضي (لبيانات 24 ساعة)
+        const defaultDate = yesterday.toISOString().split("T")[0];
+        document.getElementById("reportDate").value = defaultDate;
+
+        // تحديث التاريخ الهجري
+        updateHijriDate(defaultDate);
+
+        // تهيئة مرشحات المحافظات
+        initializeGovernorateFilter();
+
+        // تحميل البيانات عند تحميل الصفحة
+        loadRainfallData();
+
+        // إضافة مستمعي الأحداث
+        setupEventListeners();
+
+        // تحديث وقت آخر تحديث
+        updateLastUpdateTime();
+      });
+
+      // إعداد مستمعي الأحداث
+      function setupEventListeners() {
+        document
+          .getElementById("refreshBtn")
+          .addEventListener("click", loadRainfallData);
+        document
+          .getElementById("exportBtn")
+          .addEventListener("click", exportToExcel);
+        document
+          .getElementById("calculateBtn")
+          .addEventListener("click", calculateMissingData);
+
+        document
+          .getElementById("reportDate")
+          .addEventListener("change", function () {
+            updateHijriDate(this.value);
+            loadRainfallData();
+          });
+
+        document
+          .getElementById("governorateFilter")
+          .addEventListener("change", filterTable);
+        document
+          .getElementById("dataFilter")
+          .addEventListener("change", filterTable);
+        document
+          .getElementById("rainFilter")
+          .addEventListener("change", filterTable);
+
+        // إضافة مستمعي الأحداث للترتيب
+        document.querySelectorAll("th.sortable").forEach((th) => {
+          th.addEventListener("click", () => {
+            const sortBy = th.dataset.sort;
+            sortTable(sortBy);
+          });
+        });
+      }
+
+      // تهيئة مرشح المحافظات
+      function initializeGovernorateFilter() {
+        const filter = document.getElementById("governorateFilter");
+        const governorates = [...new Set(stations.map((s) => s.governorate))];
+
+        governorates.forEach((gov) => {
+          const option = document.createElement("option");
+          option.value = gov;
+          option.textContent = gov;
+          filter.appendChild(option);
+        });
+      }
+
+      // دالة تحميل بيانات الأمطار
+      async function loadRainfallData() {
+        const tableBody = document.getElementById("tableBody");
+        const reportDate = document.getElementById("reportDate").value;
+
+        // عرض حالة التحميل
+        tableBody.innerHTML = `
+                <tr>
+                    <td colspan="8" class="loading">
+                        <div class="loading-spinner"></div>
+                        جاري تحميل البيانات من قاعدة البيانات...
+                    </td>
+                </tr>
+            `;
+
+        try {
+          // جلب البيانات من قاعدة البيانات
+          currentData = await fetchDataFromDatabase(reportDate);
+
+          // عرض البيانات في الجدول
+          renderTable(currentData);
+
+          // تحديث الإحصائيات
+          updateStatistics(currentData);
+
+          // تحديث وقت آخر تحديث
+          updateLastUpdateTime();
+        } catch (error) {
+          console.error("Error loading rainfall data:", error);
+          tableBody.innerHTML = `
+                    <tr>
+                        <td colspan="8" class="loading" style="color: #e74c3c;">
+                            <i class="fas fa-exclamation-triangle"></i>
+                            حدث خطأ في تحميل البيانات: ${error.message}<br>
+                            يرجى التحقق من اتصال الإنترنت والمحاولة مرة أخرى.
+                        </td>
+                    </tr>
+                `;
+        }
+      }
+
+      // دالة جلب البيانات من قاعدة البيانات
+      async function fetchDataFromDatabase(reportDate) {
+        const data = [];
+        const currentDate = new Date(reportDate);
+        const currentYear = currentDate.getFullYear();
+        const lastYear = currentYear - 1;
+
+        for (const station of stations) {
+          try {
+            // 1. البحث أولاً في جدول rainfall_reports (الجدول المعدل)
+            let rain24h = null;
+            let snowThickness = null;
+            let dataSource = "غير متوفر";
+            let isCalculated = false;
+            let qualityFlag = "unknown";
+
+            const { data: rainfallData, error: rainfallError } =
+              await supabaseClient
+                .from("rainfall_reports")
+                .select(
+                  `
+                            rain_amount,
+                            snow_depth,
+                            observation_date,
+                            submission_date,
+                            data_source,
+                            is_calculated,
+                            quality_flag
+                        `,
+                )
+                .eq("station_name", station.name)
+                .eq("observation_date", reportDate)
+                .order("submission_date", { ascending: false })
+                .limit(1);
+
+            if (!rainfallError && rainfallData && rainfallData.length > 0) {
+              rain24h = rainfallData[0].rain_amount;
+              snowThickness = rainfallData[0].snow_depth;
+              dataSource = mapDataSource(rainfallData[0].data_source);
+              isCalculated = rainfallData[0].is_calculated || false;
+              qualityFlag = rainfallData[0].quality_flag || "unknown";
+            } else {
+              // 2. إذا لم توجد بيانات في جدول المطري، حسابها من مصادر أخرى
+              const calculatedData = await calculateRainfallFromSources(
+                station.name,
+                reportDate,
+              );
+              rain24h = calculatedData.rain24h;
+              snowThickness = calculatedData.snowThickness;
+              dataSource = calculatedData.dataSource;
+              isCalculated = true;
+              qualityFlag = calculatedData.qualityFlag;
+            }
+
+            // حساب سماكة الثلج × 0.8
+            let snowCalculated = null;
+            if (snowThickness && !isNaN(parseFloat(snowThickness))) {
+              snowCalculated = (parseFloat(snowThickness) * 0.8).toFixed(1);
+            }
+
+            // حساب أمطار الموسم حتى تاريخه
+            const seasonalRainfall = await calculateSeasonalRainfall(
+              station.name,
+              reportDate,
+            );
+
+            // حساب أمطار الموسم المقابلة للعام الماضي
+            const lastYearRainfall = await calculateLastYearRainfall(
+              station.name,
+              reportDate,
+            );
+
+            // المعدل السنوي من البيانات المخزنة
+            const annualAverage = annualAverages[station.name] || "غير معروف";
+
+            // تحديد حالة البيانات
+            let status = "غير متوفر";
+            let statusClass = "no-data";
+
+            if (rain24h !== null && rain24h !== "") {
+              status = isCalculated ? "محسوب" : "مسجل";
+              statusClass = isCalculated ? "calculated-data" : "has-data";
+            }
+
+            data.push({
+              station: station.name,
+              governorate: station.governorate,
+              rain24h: rain24h,
+              snowThickness: snowThickness,
+              snowCalculated: snowCalculated,
+              dataSource: dataSource,
+              seasonalRainfall: seasonalRainfall,
+              lastYearRainfall: lastYearRainfall,
+              annualAverage: annualAverage,
+              isCalculated: isCalculated,
+              qualityFlag: qualityFlag,
+              status: status,
+              statusClass: statusClass,
+            });
+          } catch (error) {
+            console.error(`Error fetching data for ${station.name}:`, error);
+            // بيانات افتراضية في حالة الخطأ
+            data.push({
+              station: station.name,
+              governorate: station.governorate,
+              rain24h: null,
+              snowThickness: null,
+              snowCalculated: null,
+              dataSource: "خطأ في التحميل",
+              seasonalRainfall: "0.0",
+              lastYearRainfall: "0.0",
+              annualAverage: annualAverages[station.name] || "غير معروف",
+              isCalculated: false,
+              qualityFlag: "error",
+              status: "خطأ",
+              statusClass: "no-data",
+            });
+          }
+        }
+
+        return data;
+      }
+
+      // دالة تحويل مصدر البيانات
+      function mapDataSource(source) {
+        const sources = {
+          manual: "جدول المطري",
+          hourly: "النشرات الساعية",
+          daily: "التقرير اليومي",
+          hourly_06_18: "نشرة 06/18 UTC",
+        };
+        return sources[source] || source || "غير معروف";
+      }
+
+      // دالة حساب الأمطار من مصادر مختلفة
+      async function calculateRainfallFromSources(stationName, reportDate) {
+        let result = {
+          rain24h: null,
+          snowThickness: null,
+          dataSource: "غير متوفر",
+          qualityFlag: "unknown",
+          originalSource: null,
+        };
+
+        // أ. البحث في النشرات الساعية (hourly_reports) خلال 24 ساعة
+        const startDate = new Date(reportDate);
+        startDate.setDate(startDate.getDate() - 1);
+        const startDateStr = startDate.toISOString().split("T")[0];
+
+        const { data: hourlyData, error: hourlyError } = await supabaseClient
+          .from("hourly_reports")
+          .select("precipitation_amount, submission_date, utc_time")
+          .eq("station_name", stationName)
+          .gte("submission_date", startDateStr)
+          .lte("submission_date", reportDate)
+          .order("utc_time", { ascending: true });
+
+        if (!hourlyError && hourlyData && hourlyData.length > 0) {
+          // جمع كميات الأمطار خلال الـ 24 ساعة
+          let totalRain = 0;
+          hourlyData.forEach((hour) => {
+            const rainValue = parseFloat(hour.precipitation_amount) || 0;
+            totalRain += rainValue;
+          });
+
+          if (totalRain > 0) {
+            result.rain24h = totalRain.toFixed(1);
+            result.dataSource = "محسوب من النشرات الساعية";
+            result.qualityFlag = "calculated_hourly";
+            result.originalSource = "hourly";
+            return result;
+          }
+        }
+
+        // ب. البحث في التقارير اليومية (daily_reports)
+        const { data: dailyData, error: dailyError } = await supabaseClient
+          .from("daily_reports")
+          .select("precipitation, snow_thickness, report_date")
+          .eq("station", stationName)
+          .eq("report_date", reportDate)
+          .limit(1);
+
+        if (!dailyError && dailyData && dailyData.length > 0) {
+          result.rain24h = dailyData[0].precipitation;
+          result.snowThickness = dailyData[0].snow_thickness;
+          result.dataSource = "محسوب من التقرير اليومي";
+          result.qualityFlag = "calculated_daily";
+          result.originalSource = "daily";
+          return result;
+        }
+
+        // ج. البحث في النشرات الساعية لساعتي 06 و 18 UTC
+        const utcTimes = ["06:00", "18:00"];
+        for (const utcTime of utcTimes) {
+          const { data: specificHourData, error: specificError } =
+            await supabaseClient
+              .from("hourly_reports")
+              .select("precipitation_amount")
+              .eq("station_name", stationName)
+              .eq("submission_date", reportDate)
+              .eq("utc_time", utcTime)
+              .limit(1);
+
+          if (
+            !specificError &&
+            specificHourData &&
+            specificHourData.length > 0
+          ) {
+            const rainValue = parseFloat(
+              specificHourData[0].precipitation_amount,
+            );
+            if (!isNaN(rainValue)) {
+              result.rain24h = rainValue.toFixed(1);
+              result.dataSource = `محسوب من النشرة الساعية ${utcTime} UTC`;
+              result.qualityFlag = "calculated_hourly_06_18";
+              result.originalSource = "hourly_06_18";
+              return result;
+            }
+          }
+        }
+
+        return result;
+      }
+
+      // دالة حساب أمطار الموسم
+      async function calculateSeasonalRainfall(stationName, reportDate) {
+        const currentDate = new Date(reportDate);
+        const currentYear = currentDate.getFullYear();
+
+        // بداية الموسم (1 أكتوبر من العام الحالي أو الماضي)
+        let seasonStartDate;
+        if (currentDate.getMonth() >= 9) {
+          // أكتوبر = الشهر 9 (0-indexed)
+          seasonStartDate = `${currentYear}-10-01`;
+        } else {
+          seasonStartDate = `${currentYear - 1}-10-01`;
+        }
+
+        const { data: seasonData, error: seasonError } = await supabaseClient
+          .from("rainfall_reports")
+          .select("rain_amount")
+          .eq("station_name", stationName)
+          .gte("observation_date", seasonStartDate)
+          .lte("observation_date", reportDate);
+
+        if (seasonError || !seasonData) {
+          return "0.0";
+        }
+
+        let totalSeasonRain = 0;
+        seasonData.forEach((record) => {
+          const rainValue = parseFloat(record.rain_amount) || 0;
+          totalSeasonRain += rainValue;
+        });
+
+        return totalSeasonRain.toFixed(1);
+      }
+
+      // دالة حساب أمطار العام الماضي
+      async function calculateLastYearRainfall(stationName, reportDate) {
+        const currentDate = new Date(reportDate);
+        const lastYearDate = new Date(currentDate);
+        lastYearDate.setFullYear(lastYearDate.getFullYear() - 1);
+        const lastYearDateStr = lastYearDate.toISOString().split("T")[0];
+
+        const lastYear = lastYearDate.getFullYear();
+        let seasonStartDate;
+        if (lastYearDate.getMonth() >= 9) {
+          seasonStartDate = `${lastYear}-10-01`;
+        } else {
+          seasonStartDate = `${lastYear - 1}-10-01`;
+        }
+
+        const { data: lastYearData, error: lastYearError } =
+          await supabaseClient
+            .from("rainfall_reports")
+            .select("rain_amount")
+            .eq("station_name", stationName)
+            .gte("observation_date", seasonStartDate)
+            .lte("observation_date", lastYearDateStr);
+
+        if (lastYearError || !lastYearData) {
+          return "0.0";
+        }
+
+        let totalLastYearRain = 0;
+        lastYearData.forEach((record) => {
+          const rainValue = parseFloat(record.rain_amount) || 0;
+          totalLastYearRain += rainValue;
+        });
+
+        return totalLastYearRain.toFixed(1);
+      }
+
+      // دالة حساب البيانات المفقودة
+      async function calculateMissingData() {
+        const reportDate = document.getElementById("reportDate").value;
+        const calculateBtn = document.getElementById("calculateBtn");
+
+        calculateBtn.innerHTML =
+          '<i class="fas fa-spinner fa-spin"></i> جاري الحساب...';
+        calculateBtn.disabled = true;
+
+        try {
+          // تحديد المحطات التي تفتقد بيانات
+          const stationsToCalculate = currentData.filter(
+            (item) => item.rain24h === null || item.rain24h === "",
+          );
+
+          for (const station of stationsToCalculate) {
+            // حساب البيانات للمحطة
+            const calculatedData = await calculateRainfallFromSources(
+              station.station,
+              reportDate,
+            );
+
+            if (calculatedData.rain24h !== null) {
+              // حفظ البيانات المحسوبة في جدول rainfall_reports
+              await supabaseClient.from("rainfall_reports").upsert({
+                station_name: station.station,
+                observation_date: reportDate,
+                rain_amount: calculatedData.rain24h,
+                snow_depth: calculatedData.snowThickness,
+                data_source: calculatedData.originalSource,
+                is_calculated: true,
+                quality_flag: calculatedData.qualityFlag,
+                created_at: new Date().toISOString(),
+              });
+
+              // تحديث البيانات الحالية
+              const stationIndex = currentData.findIndex(
+                (s) => s.station === station.station,
+              );
+              if (stationIndex !== -1) {
+                currentData[stationIndex].rain24h = calculatedData.rain24h;
+                currentData[stationIndex].snowThickness =
+                  calculatedData.snowThickness;
+                currentData[stationIndex].snowCalculated =
+                  calculatedData.snowThickness
+                    ? (parseFloat(calculatedData.snowThickness) * 0.8).toFixed(
+                        1,
+                      )
+                    : null;
+                currentData[stationIndex].dataSource =
+                  calculatedData.dataSource;
+                currentData[stationIndex].isCalculated = true;
+                currentData[stationIndex].status = "محسوب";
+                currentData[stationIndex].statusClass = "calculated-data";
+              }
+            }
+          }
+
+          // إعادة عرض الجدول
+          renderTable(currentData);
+          updateStatistics(currentData);
+
+          alert(`تم حساب البيانات لـ ${stationsToCalculate.length} محطة`);
+        } catch (error) {
+          console.error("Error calculating missing data:", error);
+          alert("حدث خطأ أثناء حساب البيانات المفقودة");
+        } finally {
+          calculateBtn.innerHTML =
+            '<i class="fas fa-calculator"></i> حساب البيانات';
+          calculateBtn.disabled = false;
+        }
+      }
+
+      // دالة عرض البيانات في الجدول
+      function renderTable(data) {
+        const tableBody = document.getElementById("tableBody");
+        tableBody.innerHTML = "";
+
+        data.forEach((item) => {
+          const row = document.createElement("tr");
+
+          // إضافة كلاسات للصف بناء على البيانات
+          if (item.isCalculated) {
+            row.classList.add("calculated-row");
+          }
+
+          if (item.rain24h && parseFloat(item.rain24h) > 20) {
+            row.classList.add("very-high-rain");
+          } else if (item.rain24h && parseFloat(item.rain24h) > 10) {
+            row.classList.add("high-rain");
+          }
+
+          if (item.snowCalculated) {
+            row.classList.add("snow-present");
+          }
+
+          // تنسيق عرض الأمطار خلال 24 ساعة
+          let rainDisplay = "لا توجد بيانات";
+          let rainClass = "no-data";
+
+          if (
+            item.rain24h !== null &&
+            item.rain24h !== "" &&
+            !isNaN(parseFloat(item.rain24h))
+          ) {
+            const rainValue = parseFloat(item.rain24h);
+            rainClass = item.isCalculated ? "calculated-data" : "has-data";
+            rainDisplay = rainValue.toFixed(1);
+
+            // تلوين الكميات الكبيرة
+            if (rainValue > 30) {
+              rainDisplay = `<span style="color: #8e44ad; font-weight: bold; font-size: 1.1em;">${rainValue.toFixed(1)}</span>`;
+            } else if (rainValue > 20) {
+              rainDisplay = `<span style="color: #1a5276; font-weight: bold;">${rainValue.toFixed(1)}</span>`;
+            } else if (rainValue > 10) {
+              rainDisplay = `<span style="color: #2874a6;">${rainValue.toFixed(1)}</span>`;
+            }
+          }
+
+          // عرض سماكة الثلج المحسوبة
+          let snowDisplay = "لا يوجد";
+          let snowClass = "";
+          if (item.snowCalculated !== null && item.snowCalculated !== "") {
+            snowDisplay = item.snowCalculated;
+            snowClass = "calculated-data";
+          }
+
+          // أيقونة مصدر البيانات
+          let sourceIcon = "";
+          if (item.dataSource.includes("جدول المطري")) {
+            sourceIcon = '<i class="fas fa-table" style="color: #27ae60;"></i>';
+          } else if (item.dataSource.includes("النشرات الساعية")) {
+            sourceIcon = '<i class="fas fa-clock" style="color: #3498db;"></i>';
+          } else if (item.dataSource.includes("التقرير اليومي")) {
+            sourceIcon =
+              '<i class="fas fa-calendar-day" style="color: #9b59b6;"></i>';
+          } else {
+            sourceIcon =
+              '<i class="fas fa-exclamation-circle" style="color: #e74c3c;"></i>';
+          }
+
+          row.innerHTML = `
+                    <td class="station-cell">
+                        ${item.station}
+                        <span class="station-governorate">${item.governorate}</span>
+                        <div class="station-tools">
+                            <button class="station-tool-btn" onclick="viewStationDetails('${item.station}')" title="عرض تفاصيل المحطة">
+                                <i class="fas fa-info-circle"></i>
+                            </button>
+                            <button class="station-tool-btn" onclick="editStationData('${item.station}')" title="تعديل البيانات">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                        </div>
+                    </td>
+                    <td class="rain-amount ${rainClass}">${rainDisplay}</td>
+                    <td class="${snowClass}">${snowDisplay}</td>
+                    <td>
+                        <div>${sourceIcon} ${item.dataSource}</div>
+                        <div class="data-source">${item.isCalculated ? "(محسوب)" : "(مسجل)"}</div>
+                    </td>
+                    <td class="historical-data">${item.seasonalRainfall}</td>
+                    <td class="historical-data">${item.lastYearRainfall}</td>
+                    <td>${item.annualAverage}</td>
+                    <td>
+                        <span class="${item.statusClass}">${item.status}</span>
+                        ${
+                          item.qualityFlag && item.qualityFlag !== "unknown"
+                            ? `<br><small style="font-size: 0.8rem; color: #666;">(${item.qualityFlag})</small>`
+                            : ""
+                        }
+                    </td>
+                `;
+
+          tableBody.appendChild(row);
+        });
+      }
+
+      // دالة ترتيب الجدول
+      function sortTable(sortBy) {
+        if (!sortDirection[sortBy]) {
+          sortDirection[sortBy] = "asc";
+        } else {
+          sortDirection[sortBy] =
+            sortDirection[sortBy] === "asc" ? "desc" : "asc";
+        }
+
+        currentData.sort((a, b) => {
+          let valA = a[sortBy];
+          let valB = b[sortBy];
+
+          // معالجة القيم الخاصة
+          if (
+            sortBy === "rain24h" ||
+            sortBy === "seasonal" ||
+            sortBy === "lastYear"
+          ) {
+            valA = valA === null || valA === "" ? -1 : parseFloat(valA);
+            valB = valB === null || valB === "" ? -1 : parseFloat(valB);
+          } else if (sortBy === "station") {
+            valA = a.station;
+            valB = b.station;
+          } else if (sortBy === "snow") {
+            valA =
+              a.snowCalculated === null || a.snowCalculated === ""
+                ? -1
+                : parseFloat(a.snowCalculated);
+            valB =
+              b.snowCalculated === null || b.snowCalculated === ""
+                ? -1
+                : parseFloat(b.snowCalculated);
+          } else if (sortBy === "annual") {
+            valA =
+              typeof a.annualAverage === "string"
+                ? parseFloat(a.annualAverage) || 0
+                : a.annualAverage;
+            valB =
+              typeof b.annualAverage === "string"
+                ? parseFloat(b.annualAverage) || 0
+                : b.annualAverage;
+          }
+
+          let result = 0;
+          if (valA < valB) result = -1;
+          if (valA > valB) result = 1;
+
+          // تطبيق اتجاه الترتيب
+          if (sortDirection[sortBy] === "desc") {
+            result *= -1;
+          }
+
+          return result;
+        });
+
+        renderTable(currentData);
+
+        // تحديث أيقونات الترتيب
+        document.querySelectorAll("th .sort-icon").forEach((icon) => {
+          icon.innerHTML = '<i class="fas fa-sort"></i>';
+        });
+
+        const currentTh = document.querySelector(
+          `th[data-sort="${sortBy}"] .sort-icon`,
+        );
+        if (currentTh) {
+          currentTh.innerHTML =
+            sortDirection[sortBy] === "asc"
+              ? '<i class="fas fa-sort-up"></i>'
+              : '<i class="fas fa-sort-down"></i>';
+        }
+      }
+
+      // دالة ترشيح الجدول
+      function filterTable() {
+        const governorateFilter =
+          document.getElementById("governorateFilter").value;
+        const dataFilter = document.getElementById("dataFilter").value;
+        const rainFilter = document.getElementById("rainFilter").value;
+
+        let filteredData = [...currentData];
+
+        // تطبيق مرشح المحافظة
+        if (governorateFilter !== "all") {
+          filteredData = filteredData.filter(
+            (item) => item.governorate === governorateFilter,
+          );
+        }
+
+        // تطبيق مرشح حالة البيانات
+        if (dataFilter !== "all") {
+          if (dataFilter === "hasData") {
+            filteredData = filteredData.filter(
+              (item) => item.rain24h !== null && item.rain24h !== "",
+            );
+          } else if (dataFilter === "noData") {
+            filteredData = filteredData.filter(
+              (item) => item.rain24h === null || item.rain24h === "",
+            );
+          } else if (dataFilter === "calculated") {
+            filteredData = filteredData.filter((item) => item.isCalculated);
+          }
+        }
+
+        // تطبيق مرشح كمية الأمطار
+        if (rainFilter !== "all" && dataFilter !== "noData") {
+          filteredData = filteredData.filter((item) => {
+            if (!item.rain24h || isNaN(parseFloat(item.rain24h))) return false;
+
+            const rainValue = parseFloat(item.rain24h);
+            if (rainFilter === "high") return rainValue > 20;
+            if (rainFilter === "medium")
+              return rainValue >= 10 && rainValue <= 20;
+            if (rainFilter === "low") return rainValue < 10;
+            return true;
+          });
+        }
+
+        renderTable(filteredData);
+      }
+
+      // دالة تحديث الإحصائيات
+      function updateStatistics(data) {
+        const totalStations = data.length;
+        const stationsWithData = data.filter(
+          (item) => item.rain24h !== null && item.rain24h !== "",
+        ).length;
+
+        let totalRainfall = 0;
+        data.forEach((item) => {
+          if (item.rain24h && !isNaN(parseFloat(item.rain24h))) {
+            totalRainfall += parseFloat(item.rain24h);
+          }
+        });
+
+        document.getElementById("totalStations").innerHTML =
+          `<i class="fas fa-map-marker-alt"></i> إجمالي المحطات: <span>${totalStations}</span>`;
+
+        document.getElementById("stationsWithData").innerHTML =
+          `<i class="fas fa-check-circle"></i> محطات ببيانات: <span>${stationsWithData}</span>`;
+
+        document.getElementById("totalRainfall").innerHTML =
+          `<i class="fas fa-tint"></i> مجموع الأمطار: <span>${totalRainfall.toFixed(1)}</span> ملم`;
+      }
+
+      // دالة تحديث وقت آخر تحديث
+      function updateLastUpdateTime() {
+        const now = new Date();
+        const timeString = now.toLocaleTimeString("ar-SA", {
+          hour: "2-digit",
+          minute: "2-digit",
+          second: "2-digit",
+        });
+        const dateString = now.toLocaleDateString("ar-SA", {
+          year: "numeric",
+          month: "long",
+          day: "numeric",
+          weekday: "long",
+        });
+
+        document.getElementById("lastUpdate").textContent =
+          `${timeString} - ${dateString}`;
+      }
+
+      // دالة تحويل التاريخ إلى هجري
+      function updateHijriDate(gregorianDate) {
+        const date = new Date(gregorianDate);
+        const hijriDate = convertToHijri(date);
+        document.getElementById("hijriDate").innerHTML =
+          `<i class="fas fa-moon"></i> ${hijriDate}`;
+      }
+
+      // دالة تحويل التاريخ إلى هجري (تقريبية)
+      function convertToHijri(gregorianDate) {
+        const year = gregorianDate.getFullYear();
+        const month = gregorianDate.getMonth() + 1;
+        const day = gregorianDate.getDate();
+
+        // تحويل تقريبي
+        let hijriYear = Math.floor((year - 622) * (33 / 32));
+        if (hijriYear < 0) hijriYear = 0;
+
+        const hijriMonths = [
+          "محرم",
+          "صفر",
+          "ربيع الأول",
+          "ربيع الثاني",
+          "جمادى الأولى",
+          "جمادى الآخرة",
+          "رجب",
+          "شعبان",
+          "رمضان",
+          "شوال",
+          "ذو القعدة",
+          "ذو الحجة",
+        ];
+
+        const hijriMonthIndex = Math.floor((month + 8) % 12);
+        const hijriMonth = hijriMonths[hijriMonthIndex];
+
+        let hijriDay = day - Math.floor(Math.random() * 2);
+        if (hijriDay < 1) hijriDay = 1;
+        if (hijriDay > 30) hijriDay = 30;
+
+        return `${hijriDay} ${hijriMonth} ${hijriYear}هـ`;
+      }
+
+      // دالة تصدير البيانات إلى Excel
+      function exportToExcel() {
+        const reportDate = document.getElementById("reportDate").value;
+        const hijriDate = document.getElementById("hijriDate").textContent;
+
+        // تحويل البيانات إلى تنسيق مناسب للتصدير
+        const exportData = currentData.map((item) => ({
+          المحطة: item.station,
+          المحافظة: item.governorate,
+          "الأمطار 24 ساعة (مم)": item.rain24h || "لا توجد بيانات",
+          "الثلج × 0.8 (سم)": item.snowCalculated || "لا يوجد",
+          "مصدر البيانات": item.dataSource,
+          "أمطار الموسم (مم)": item.seasonalRainfall,
+          "العام الماضي (مم)": item.lastYearRainfall,
+          "المعدل السنوي (مم)": item.annualAverage,
+          الحالة: item.status,
+          "نوع البيانات": item.isCalculated ? "محسوب" : "مسجل",
+        }));
+
+        // إنشاء ورقة العمل
+        const ws = XLSX.utils.json_to_sheet(exportData);
+
+        // إضافة معلومات الرأسية
+        const wb = XLSX.utils.book_new();
+
+        // إضافة معلومات وصفية
+        const info = [
+          ["تقرير الأمطار - المحافظات السورية"],
+          [`التاريخ الميلادي: ${reportDate}`],
+          [`التاريخ الهجري: ${hijriDate}`],
+          [`تاريخ التصدير: ${new Date().toLocaleDateString("ar-SA")}`],
+          [""],
+        ];
+
+        const wsInfo = XLSX.utils.aoa_to_sheet(info);
+        XLSX.utils.book_append_sheet(wb, wsInfo, "معلومات");
+
+        // إضافة البيانات
+        XLSX.utils.book_append_sheet(wb, ws, "بيانات الأمطار");
+
+        // حفظ الملف
+        const fileName = `أمطار_المحافظات_${reportDate.replace(/-/g, "_")}.xlsx`;
+        XLSX.writeFile(wb, fileName);
+
+        // إشعار للمستخدم
+        alert(`تم تصدير البيانات إلى ملف ${fileName}`);
+      }
+
+      // دوال مساعدة (لأزرار المحطة)
+      function viewStationDetails(stationName) {
+        const stationData = currentData.find((s) => s.station === stationName);
+        if (stationData) {
+          alert(`تفاصيل المحطة: ${stationName}\n
+المحافظة: ${stationData.governorate}\n
+الأمطار 24 ساعة: ${stationData.rain24h || "لا توجد بيانات"} ملم\n
+الثلج المحسوب: ${stationData.snowCalculated || "لا يوجد"} سم\n
+مصدر البيانات: ${stationData.dataSource}\n
+أمطار الموسم: ${stationData.seasonalRainfall} ملم\n
+العام الماضي: ${stationData.lastYearRainfall} ملم\n
+المعدل السنوي: ${stationData.annualAverage} ملم\n
+الحالة: ${stationData.status}`);
+        }
+      }
+
+      function editStationData(stationName) {
+        const stationData = currentData.find((s) => s.station === stationName);
+        if (stationData) {
+          const newRainValue = prompt(
+            `تعديل بيانات الأمطار للمحطة: ${stationName}\n\nالقيمة الحالية: ${stationData.rain24h || "لا توجد بيانات"} ملم\n\nأدخل القيمة الجديدة (ملم):`,
+            stationData.rain24h || "",
+          );
+
+          if (newRainValue !== null) {
+            // هنا يمكن إضافة كود لحفظ التعديل في قاعدة البيانات
+            alert("سيتم إضافة خاصية الحفظ في قاعدة البيانات في التحديث القادم");
+          }
+        }
+      }
+
+      // تحديث تلقائي للبيانات كل 5 دقائق
+      setInterval(() => {
+        const refreshBtn = document.getElementById("refreshBtn");
+        const originalHTML = refreshBtn.innerHTML;
+
+        refreshBtn.innerHTML =
+          '<i class="fas fa-sync-alt fa-spin"></i> تحديث تلقائي...';
+        refreshBtn.disabled = true;
+
+        setTimeout(() => {
+          loadRainfallData();
+          refreshBtn.innerHTML = originalHTML;
+          refreshBtn.disabled = false;
+        }, 1000);
+      }, 300000); // 5 دقائق
+
+      // إضافة تأثير تحميل عند النقر على الأزرار
+      document.querySelectorAll(".btn").forEach((button) => {
+        button.addEventListener("click", function () {
+          this.style.transform = "scale(0.98)";
+          setTimeout(() => {
+            this.style.transform = "";
+          }, 150);
+        });
+      });
+    </script>
+  </body>
+</html>

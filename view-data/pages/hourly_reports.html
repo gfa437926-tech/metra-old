@@ -1,0 +1,1995 @@
+[file content begin]
+<!doctype html>
+<html lang="ar" dir="rtl">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>نشرة إدارة البيانات الجوية الساعية - نظام متطور</title>
+    <!-- إضافة Font Awesome للأيقونات -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <!-- تحميل مكتبة SheetJS لتصدير Excel -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <style>
+      /* أنماط متقدمة مع تأثيرات */
+      :root {
+        --primary-color: #1a5fb4;
+        --secondary-color: #26a269;
+        --accent-color: #e01b24;
+        --dark-color: #1e1e1e;
+        --light-color: #f8f9fa;
+        --card-bg: rgba(255, 255, 255, 0.95);
+        --shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        --shadow-hover: 0 15px 40px rgba(0, 0, 0, 0.15);
+        --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      }
+
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+        font-family: "Segoe UI", "Cairo", Tahoma, Geneva, Verdana, sans-serif;
+      }
+
+      body {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: var(--dark-color);
+        line-height: 1.6;
+        min-height: 100vh;
+        padding: 20px;
+        overflow-x: hidden;
+      }
+
+      .container {
+        max-width: 100%;
+        margin: 0 auto;
+        overflow: hidden;
+      }
+
+      /* تصميم الرأس */
+      header {
+        background: linear-gradient(
+          135deg,
+          var(--primary-color),
+          var(--secondary-color)
+        );
+        color: white;
+        padding: 30px;
+        border-radius: 20px;
+        margin-bottom: 40px;
+        text-align: center;
+        box-shadow: var(--shadow);
+        position: relative;
+        overflow: hidden;
+      }
+
+      header::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 5px;
+        background: linear-gradient(
+          90deg,
+          #ff6b6b,
+          #4ecdc4,
+          #45b7d1,
+          #96c93d,
+          #ffeaa7
+        );
+        animation: gradientMove 3s linear infinite;
+      }
+
+      @keyframes gradientMove {
+        0% {
+          background-position: 0% 50%;
+        }
+        100% {
+          background-position: 100% 50%;
+        }
+      }
+
+      h1 {
+        font-size: 36px;
+        margin-bottom: 15px;
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+        background: linear-gradient(to right, #fff, #e0f7fa);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+      }
+
+      .description {
+        font-size: 18px;
+        opacity: 0.9;
+        max-width: 800px;
+        margin: 0 auto;
+      }
+
+      /* تصميم لوحة التحكم */
+      .control-panel {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 25px;
+        margin-bottom: 40px;
+      }
+
+      .control-card {
+        background: var(--card-bg);
+        padding: 25px;
+        border-radius: 18px;
+        box-shadow: var(--shadow);
+        transition: var(--transition);
+        backdrop-filter: blur(10px);
+      }
+
+      .control-card:hover {
+        transform: translateY(-5px);
+        box-shadow: var(--shadow-hover);
+      }
+
+      .filter-group label {
+        display: block;
+        margin-bottom: 12px;
+        font-weight: 600;
+        color: var(--primary-color);
+        font-size: 16px;
+      }
+
+      select,
+      input {
+        width: 100%;
+        padding: 15px;
+        border: 2px solid transparent;
+        border-radius: 12px;
+        font-size: 16px;
+        transition: var(--transition);
+        background: rgba(255, 255, 255, 0.9);
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+      }
+
+      select:focus,
+      input:focus {
+        border-color: var(--primary-color);
+        outline: none;
+        box-shadow: 0 0 0 3px rgba(26, 95, 180, 0.2);
+      }
+
+      /* تصميم الأزرار */
+      .buttons-container {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 15px;
+        justify-content: center;
+        margin-bottom: 30px;
+      }
+
+      .btn {
+        padding: 16px 32px;
+        border: none;
+        border-radius: 12px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        transition: var(--transition);
+        position: relative;
+        overflow: hidden;
+        min-width: 180px;
+        justify-content: center;
+        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+      }
+
+      .btn-primary {
+        background: linear-gradient(135deg, var(--primary-color), #0d4a8f);
+        color: white;
+      }
+
+      .btn-primary:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 10px 20px rgba(26, 95, 180, 0.3);
+      }
+
+      .btn-secondary {
+        background: linear-gradient(135deg, var(--secondary-color), #1d8c5a);
+        color: white;
+      }
+
+      .btn-secondary:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 10px 20px rgba(38, 162, 105, 0.3);
+      }
+
+      .btn-outline {
+        background: transparent;
+        color: var(--primary-color);
+        border: 2px solid var(--primary-color);
+      }
+
+      .btn-outline:hover {
+        background: var(--primary-color);
+        color: white;
+        transform: translateY(-3px);
+      }
+
+      .btn-accent {
+        background: linear-gradient(135deg, #8e44ad, #9b59b6);
+        color: white;
+      }
+
+      .btn-accent:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 10px 20px rgba(142, 68, 173, 0.3);
+      }
+
+      /* تصميم الجدول */
+      .table-container {
+        overflow-x: auto;
+        border-radius: 20px;
+        box-shadow: var(--shadow);
+        margin-bottom: 50px;
+        background: var(--card-bg);
+        padding: 20px;
+      }
+
+      table {
+        width: 100%;
+        border-collapse: separate;
+        border-spacing: 0;
+        background: transparent;
+        min-width: 1800px;
+      }
+
+      thead {
+        position: sticky;
+        top: 0;
+        z-index: 100;
+      }
+
+      thead tr {
+        background: linear-gradient(135deg, var(--primary-color), #0d4a8f);
+      }
+
+      th {
+        padding: 20px 15px;
+        text-align: center;
+        font-weight: 600;
+        font-size: 16px;
+        color: white;
+        white-space: nowrap;
+        position: relative;
+        border-right: 1px solid rgba(255, 255, 255, 0.1);
+        border-bottom: none;
+      }
+
+      th:last-child {
+        border-right: none;
+      }
+
+      /* سطر الرموز */
+      .symbols-row {
+        background: linear-gradient(135deg, #2c3e50, #34495e);
+        color: white;
+        font-weight: bold;
+      }
+
+      .symbols-row td {
+        padding: 18px 15px;
+        text-align: center;
+        font-size: 15px;
+        border-right: 1px solid rgba(255, 255, 255, 0.1);
+        position: relative;
+      }
+
+      tbody tr {
+        transition: var(--transition);
+      }
+
+      tbody tr:hover {
+        background: rgba(26, 95, 180, 0.05);
+      }
+
+      td {
+        padding: 18px 15px;
+        text-align: center;
+        font-size: 15px;
+        border-right: 1px solid rgba(0, 0, 0, 0.05);
+        border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+      }
+
+      /* تنسيق وقت الرصد */
+      .time-cell {
+        background: linear-gradient(135deg, #e3f2fd, #bbdefb);
+        font-weight: bold;
+        min-width: 70px;
+      }
+
+      /* تخصيص شريط التمرير */
+      .table-container::-webkit-scrollbar {
+        width: 12px;
+        height: 12px;
+      }
+
+      .table-container::-webkit-scrollbar-track {
+        background: rgba(0, 0, 0, 0.1);
+        border-radius: 10px;
+      }
+
+      .table-container::-webkit-scrollbar-thumb {
+        background: linear-gradient(
+          135deg,
+          var(--primary-color),
+          var(--secondary-color)
+        );
+        border-radius: 10px;
+      }
+
+      .table-container::-webkit-scrollbar-thumb:hover {
+        background: linear-gradient(135deg, #0d4a8f, #1d8c5a);
+      }
+
+      /* تصميم متجاوب */
+      @media (max-width: 768px) {
+        body {
+          padding: 10px;
+        }
+
+        h1 {
+          font-size: 28px;
+        }
+
+        .control-panel {
+          grid-template-columns: 1fr;
+        }
+
+        .buttons-container {
+          flex-direction: column;
+        }
+
+        .btn {
+          width: 100%;
+        }
+
+        th,
+        td {
+          padding: 12px 8px;
+          font-size: 13px;
+        }
+      }
+
+      /* تنسيق حالات الاتصال */
+      .connection-status {
+        display: inline-block;
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        margin-right: 8px;
+      }
+
+      .connection-connected {
+        background: #26a269;
+        box-shadow: 0 0 10px #26a269;
+      }
+
+      .connection-disconnected {
+        background: #e01b24;
+        box-shadow: 0 0 10px #e01b24;
+      }
+
+      .connection-connecting {
+        background: #ffb300;
+        box-shadow: 0 0 10px #ffb300;
+      }
+
+      /* تصميم رسائل النظام */
+      .message {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        left: 20px;
+        max-width: 400px;
+        margin: 0 auto;
+        padding: 15px;
+        border-radius: 10px;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        z-index: 1000;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        opacity: 0;
+        transform: translateY(-20px);
+        animation: slideDownMessage 0.5s ease-out forwards;
+      }
+
+      @keyframes slideDownMessage {
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      .message-success {
+        background: linear-gradient(135deg, #d4edda, #c3e6cb);
+        color: #155724;
+        border-left: 6px solid #28a745;
+      }
+
+      .message-error {
+        background: linear-gradient(135deg, #f8d7da, #f5c6cb);
+        color: #721c24;
+        border-left: 6px solid #dc3545;
+      }
+
+      .message-warning {
+        background: linear-gradient(135deg, #fff3cd, #ffeaa7);
+        color: #856404;
+        border-left: 6px solid #ffc107;
+      }
+
+      .message-info {
+        background: linear-gradient(135deg, #d1ecf1, #bee5eb);
+        color: #0c5460;
+        border-left: 6px solid #17a2b8;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <header>
+        <h1>
+          <i class="fas fa-cloud-sun"></i> نظام بيانات الأرصاد الجوية الساعية
+        </h1>
+        <p class="description">
+          عرض بيانات الأرصاد الجوية المسجلة على مدار الساعة مع تصدير مطابق للملف
+        </p>
+        <p id="connection-status" style="margin-top: 15px; font-size: 16px">
+          <span
+            class="connection-status connection-connecting"
+            id="status-indicator"
+          ></span>
+          <span id="status-text">جاري تحميل النظام...</span>
+        </p>
+      </header>
+
+      <!-- لوحة التحكم -->
+      <div class="control-panel">
+        <div class="control-card">
+          <div class="filter-group">
+            <label for="station-select"
+              ><i class="fas fa-map-marker-alt"></i> المحطة</label
+            >
+            <select id="station-select">
+              <option value="">اختر المحطة...</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="control-card">
+          <div class="filter-group">
+            <label for="year-select"
+              ><i class="fas fa-calendar-alt"></i> السنة</label
+            >
+            <select id="year-select">
+              <option value="">اختر السنة...</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="control-card">
+          <div class="filter-group">
+            <label for="month-select"
+              ><i class="fas fa-calendar"></i> الشهر</label
+            >
+            <select id="month-select">
+              <option value="">اختر الشهر...</option>
+              <option value="01">يناير</option>
+              <option value="02">فبراير</option>
+              <option value="03">مارس</option>
+              <option value="04">أبريل</option>
+              <option value="05">مايو</option>
+              <option value="06">يونيو</option>
+              <option value="07">يوليو</option>
+              <option value="08">أغسطس</option>
+              <option value="09">سبتمبر</option>
+              <option value="10">أكتوبر</option>
+              <option value="11">نوفمبر</option>
+              <option value="12">ديسمبر</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="control-card">
+          <div class="filter-group">
+            <label for="day-select"
+              ><i class="fas fa-calendar-day"></i> اليوم</label
+            >
+            <select id="day-select">
+              <option value="">اختر اليوم...</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <!-- أزرار التحكم -->
+      <div class="buttons-container">
+        <button class="btn btn-primary" id="load-data-btn">
+          <i class="fas fa-download"></i> تحميل البيانات
+        </button>
+        <button class="btn btn-secondary" id="refresh-btn">
+          <i class="fas fa-sync-alt"></i> تحديث البيانات
+        </button>
+        <button class="btn btn-outline" id="export-excel-btn">
+          <i class="fas fa-file-excel"></i> تصدير Excel
+        </button>
+        <button class="btn btn-accent" id="export-modified-btn">
+          <i class="fas fa-file-export"></i> تصدير معدل
+        </button>
+        <button class="btn btn-outline" id="clear-filters-btn">
+          <i class="fas fa-filter-circle-xmark"></i> مسح الفلاتر
+        </button>
+      </div>
+
+      <!-- جدول البيانات -->
+      <div class="table-container">
+        <table id="weather-table">
+          <thead>
+            <tr>
+              <th>وقت الرصد</th>
+              <th>الرطوبة النسبية %</th>
+              <th>ضغط بخار الماء لأقرب عشر الميلبار</th>
+              <th>درجة الندى لأقرب عشر (سْ)</th>
+              <th>ضـغــط المـحـطـــة</th>
+              <th>الضغط المحول لسطح البحر</th>
+              <th>درجة الحرارة الجافة</th>
+              <th>درجة الحرارة الرطبة</th>
+              <th>اتجاه الرياح السطحية بعشرات الدرجات</th>
+              <th>سرعة الرياح السطحية لأقرب م/ثا</th>
+              <th>اتجاه المتوسط الساعي للرياح السطحية</th>
+              <th>سرعة المتوسط الساعي للرياح السطحية</th>
+              <th>الرؤية السطحية الأفقية بمئات الأمتار</th>
+              <th>الطقس الحاضر</th>
+              <th>الطقس الغابر</th>
+              <th>التغطية الكلية للسحب</th>
+              <th>كمية السحب في الطبقة الأولى</th>
+              <th>نوع السحب في الطبقة الأولى</th>
+              <th>ارتفاع السحب في الطبقة الأولى</th>
+              <th>كمية السحب في الطبقة الثانية</th>
+              <th>نوع السحب في الطبقة الثانية</th>
+              <th>ارتفاع السحب في الطبقة الثانية</th>
+              <th>مجموع التغطية للطبقتين 1+2</th>
+              <th>كمية السحب في الطبقة الثالثة</th>
+              <th>نوع السحب في الطبقة الثالثة</th>
+              <th>ارتفاع السحب في الطبقة الثالثة</th>
+              <th>مجموع التغطية للطبقات 1+2+3</th>
+              <th>كمية السحب في الطبقة الرابعة</th>
+              <th>فرق ضغط بخار الماء عن الإشباع</th>
+            </tr>
+          </thead>
+          <tbody id="table-body">
+            <!-- سيتم تعبئة سطر الرموز هنا -->
+            <!-- سيتم تعبئة البيانات هنا -->
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <script src="js/protect.js"></script>
+
+    <script>
+      // ============================================
+      // إعدادات الاتصال بقاعدة البيانات Supabase
+      // ============================================
+      const SUPABASE_CONFIG = {
+        url: "https://vktcvkwqszehgmhqjrkb.supabase.co",
+        anonKey:
+          "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZrdGN2a3dxc3plaGdtaHFqcmtiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjIxNzE3NTEsImV4cCI6MjA3Nzc0Nzc1MX0.KTX1c8BAJpy1Jp3-IDXFRqb4Jo7SLabiwICBtn_mR5o",
+      };
+
+      // ============================================
+      // رموز العناصر كما في الملف الأصلي
+      // ============================================
+      const ELEMENT_SYMBOLS = {
+        "الرطوبة النسبية %": "105",
+        "ضغط بخار الماء لأقرب عشر الميلبار": "166",
+        "درجة الندى لأقرب عشر (سْ)": "103",
+        "ضـغــط المـحـطـــة": "106",
+        "الضغط المحول لسطح البحر": "107",
+        "درجة الحرارة الجافة": "101",
+        "درجة الحرارة الرطبة": "102",
+        "اتجاه الرياح السطحية بعشرات الدرجات": "112",
+        "سرعة الرياح السطحية لأقرب م/ثا": "111",
+        "اتجاه المتوسط الساعي للرياح السطحية": "182",
+        "سرعة المتوسط الساعي للرياح السطحية": "181",
+        "الرؤية السطحية الأفقية بمئات الأمتار": "110",
+        "الطقس الحاضر": "167",
+        "الطقس الغابر": "183",
+        "التغطية الكلية للسحب": "114",
+        "كمية السحب في الطبقة الأولى": "116",
+        "نوع السحب في الطبقة الأولى": "117",
+        "ارتفاع السحب في الطبقة الأولى": "118",
+        "كمية السحب في الطبقة الثانية": "120",
+        "نوع السحب في الطبقة الثانية": "121",
+        "ارتفاع السحب في الطبقة الثانية": "122",
+        "مجموع التغطية للطبقتين 1+2": "184",
+        "كمية السحب في الطبقة الثالثة": "124",
+        "نوع السحب في الطبقة الثالثة": "125",
+        "ارتفاع السحب في الطبقة الثالثة": "126",
+        "مجموع التغطية للطبقات 1+2+3": "185",
+        "كمية السحب في الطبقة الرابعة": "128",
+        "فرق ضغط بخار الماء عن الإشباع": "186",
+      };
+
+      // ============================================
+      // تهيئة المتغيرات العامة
+      // ============================================
+      let supabaseClient = null;
+      let isConnected = false;
+      let currentData = [];
+      let stations = [];
+      let years = [];
+
+      // ============================================
+      // عناصر DOM
+      // ============================================
+      const stationSelect = document.getElementById("station-select");
+      const yearSelect = document.getElementById("year-select");
+      const monthSelect = document.getElementById("month-select");
+      const daySelect = document.getElementById("day-select");
+      const loadDataBtn = document.getElementById("load-data-btn");
+      const refreshBtn = document.getElementById("refresh-btn");
+      const exportExcelBtn = document.getElementById("export-excel-btn");
+      const exportModifiedBtn = document.getElementById("export-modified-btn");
+      const clearFiltersBtn = document.getElementById("clear-filters-btn");
+      const tableBody = document.getElementById("table-body");
+      const statusIndicator = document.getElementById("status-indicator");
+      const statusText = document.getElementById("status-text");
+
+      // ============================================
+      // وظيفة تحميل مكتبة Supabase ديناميكياً
+      // ============================================
+      function loadSupabaseLibrary() {
+        return new Promise((resolve, reject) => {
+          // تحقق إذا كانت المكتبة محملة مسبقاً
+          if (window.supabase) {
+            resolve(window.supabase);
+            return;
+          }
+
+          // إنشاء عنصر script لتحميل المكتبة
+          const script = document.createElement("script");
+          script.src =
+            "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js";
+          script.type = "text/javascript";
+          script.crossOrigin = "anonymous";
+
+          script.onload = () => {
+            if (window.supabase) {
+              resolve(window.supabase);
+            } else {
+              reject(new Error("مكتبة Supabase لم تحمل بشكل صحيح"));
+            }
+          };
+
+          script.onerror = () => {
+            reject(new Error("فشل في تحميل مكتبة Supabase"));
+          };
+
+          document.head.appendChild(script);
+        });
+      }
+
+      // ============================================
+      // وظائف المعالجة الجديدة للتصدير المعدل
+      // ============================================
+
+      // 1. معالجة التوقيت: حذف الصفر الأول من التوقيت (مثلاً 01 يصبح 1)
+      function processTime(value) {
+        if (!value || value === "" || value === "-") return value;
+
+        const strValue = String(value).trim();
+
+        // إذا كان التوقيت يبدأ بـ 0 ويكون طوله 2 (مثل 01، 02، ...، 09)
+        if (strValue.startsWith("0") && strValue.length === 2) {
+          return strValue.substring(1); // حذف الصفر الأول
+        }
+
+        return strValue;
+      }
+
+      // 2. معالجة أنواع السحب: استخراج الرقم فقط، وإعطاء 0 إذا لم يكن هناك رقم
+      function processCloudType(value) {
+        if (!value || value === "" || value === "-") return "0";
+
+        const strValue = String(value).trim();
+
+        // البحث عن أرقام في النص
+        const match = strValue.match(/\d+/);
+
+        if (match) {
+          return match[0]; // إرجاع الرقم الأول الموجود
+        }
+
+        // إذا لم يوجد رقم، إرجاع 0
+        return "0";
+      }
+
+      // 3. معالجة كمية السحب عندما تكون التغطية الكلية 9
+      function processCloudAmountWhenTotalIs9(value) {
+        if (!value || value === "" || value === "-") return "";
+
+        const strValue = String(value).trim();
+
+        // إذا كانت قيمة كمية السحب موجودة وغير فارغة
+        if (strValue) {
+          return "8"; // تحويل إلى 8
+        }
+
+        return "";
+      }
+
+      // 4. معالجة ارتفاع السحب عندما تكون التغطية الكلية 9
+      function processCloudHeightWhenTotalIs9(value) {
+        if (!value || value === "" || value === "-") return "";
+
+        const strValue = String(value).trim();
+
+        // إذا كان ارتفاع السحب يحتوي على قيمة
+        if (strValue) {
+          return ""; // جعله فارغاً
+        }
+
+        return "";
+      }
+
+      // 5. معالجة الشاملة لبيانات السحب للتصدير المعدل
+      function processCloudDataForModifiedExport(record) {
+        // استخراج القيم الأساسية
+        const cloudData = {
+          totalCover: record.total_cloud_cover,
+          cloud1Amount: record.cloud1_amount,
+          cloud1Type: record.cloud1_type,
+          cloud1Height: record.cloud1_height,
+          cloud2Amount: record.cloud2_amount,
+          cloud2Type: record.cloud2_type,
+          cloud2Height: record.cloud2_height,
+          cover12: record.cover12,
+          cloud3Amount: record.cloud3_amount,
+          cloud3Type: record.cloud3_type,
+          cloud3Height: record.cloud3_height,
+          cover123: record.cover123,
+          cloud4Amount: record.cloud4_amount,
+        };
+
+        // تنظيف القيم
+        Object.keys(cloudData).forEach((key) => {
+          if (
+            cloudData[key] === null ||
+            cloudData[key] === undefined ||
+            cloudData[key] === ""
+          ) {
+            cloudData[key] = "";
+          } else {
+            cloudData[key] = String(cloudData[key]).trim();
+          }
+        });
+
+        // إذا كانت التغطية الكلية 9
+        if (cloudData.totalCover === "9") {
+          // تحويل التغطية الكلية إلى 8
+          cloudData.totalCover = "8";
+
+          // تحويل كمية السحب في جميع الطبقات إلى 8 إذا كانت موجودة
+          cloudData.cloud1Amount = cloudData.cloud1Amount ? "8" : "";
+          cloudData.cloud2Amount = cloudData.cloud2Amount ? "8" : "";
+          cloudData.cloud3Amount = cloudData.cloud3Amount ? "8" : "";
+          cloudData.cloud4Amount = cloudData.cloud4Amount ? "8" : "";
+
+          // تحويل مجموع التغطية إلى 8 إذا كانت موجودة
+          cloudData.cover12 = cloudData.cover12 ? "8" : "";
+          cloudData.cover123 = cloudData.cover123 ? "8" : "";
+
+          // جعل ارتفاع السحب فارغاً إذا كان موجوداً
+          cloudData.cloud1Height = cloudData.cloud1Height ? "" : "";
+          cloudData.cloud2Height = cloudData.cloud2Height ? "" : "";
+          cloudData.cloud3Height = cloudData.cloud3Height ? "" : "";
+        }
+
+        // معالجة أنواع السحب: استخراج الرقم فقط وإعطاء 0 إذا لم يكن هناك رقم
+        cloudData.cloud1Type = processCloudType(cloudData.cloud1Type);
+        cloudData.cloud2Type = processCloudType(cloudData.cloud2Type);
+        cloudData.cloud3Type = processCloudType(cloudData.cloud3Type);
+
+        return cloudData;
+      }
+
+      // ============================================
+      // وظيفة تنظيف القيم المعدلة للتصدير المعدل
+      // ============================================
+      function cleanValueForModifiedExport(value, columnName) {
+        if (value === null || value === undefined) {
+          return ""; // فراغ بدلاً من null أو undefined
+        }
+
+        const strValue = String(value).trim();
+
+        if (
+          strValue === "" ||
+          strValue.toLowerCase() === "nothing" ||
+          strValue.toLowerCase() === "null" ||
+          strValue.toLowerCase() === "undefined"
+        ) {
+          return ""; // فراغ بدلاً من NOTHING
+        }
+
+        if (strValue === "#" || strValue === "##" || strValue === "###") {
+          return ""; // فراغ بدلاً من #
+        }
+
+        // إزالة أي علامات # من النص
+        let cleanedValue = strValue.replace(/#/g, "");
+
+        // تطبيق المعالجات الخاصة حسب نوع الحقل للتصدير المعدل
+        switch (columnName) {
+          case "وقت الرصد":
+            cleanedValue = processTime(cleanedValue);
+            break;
+
+          case "نوع السحب في الطبقة الأولى":
+          case "نوع السحب في الطبقة الثانية":
+          case "نوع السحب في الطبقة الثالثة":
+            cleanedValue = processCloudType(cleanedValue);
+            break;
+
+          case "التغطية الكلية للسحب":
+            if (cleanedValue === "9") {
+              cleanedValue = "8";
+            }
+            break;
+        }
+
+        return cleanedValue;
+      }
+
+      // ============================================
+      // وظائف المعالجة القديمة للتصدير العادي
+      // ============================================
+
+      // 1. معالجة الرطوبة النسبية والضغط الجوي: حذف الصفر الأول من اليسار إذا كان الصفر هو الرقم الأول
+      function processHumidityPressure(value) {
+        if (!value || value === "" || value === "-") return value;
+
+        const strValue = String(value).trim();
+
+        // إذا كان الرقم يبدأ بـ 0 ويكون الرقم الصحيح (ليس عدد عشري)
+        if (strValue.startsWith("0") && !strValue.includes(".")) {
+          return strValue.substring(1); // حذف الصفر الأول
+        }
+
+        return strValue;
+      }
+
+      // 2. معالجة درجات الحرارة: حذف علامة +، ترك علامة -
+      function processTemperature(value) {
+        if (!value || value === "" || value === "-") return value;
+
+        const strValue = String(value).trim();
+
+        // حذف علامة +
+        if (strValue.startsWith("+")) {
+          return strValue.substring(1);
+        }
+
+        return strValue;
+      }
+
+      // 3. معالجة التغطية الكلية: إذا كانت القيمة 9 تحويلها إلى 8
+      function processTotalCloudCover(value) {
+        if (value === "9" || value === 9) {
+          return "8";
+        }
+        return value;
+      }
+
+      // 4. معالجة السحب: إذا كان مجموع التغطية 9، تحويل كافة حقول الكمية والمجموع إلى 8
+      function processCloudData(record) {
+        // استخراج القيم الأساسية
+        const cloudData = {
+          totalCover: record.total_cloud_cover,
+          cloud1Amount: record.cloud1_amount,
+          cloud2Amount: record.cloud2_amount,
+          cloud3Amount: record.cloud3_amount,
+          cloud4Amount: record.cloud4_amount,
+          cover12: record.cover12,
+          cover123: record.cover123,
+        };
+
+        // تنظيف القيم
+        Object.keys(cloudData).forEach((key) => {
+          if (
+            cloudData[key] === null ||
+            cloudData[key] === undefined ||
+            cloudData[key] === ""
+          ) {
+            cloudData[key] = "";
+          } else {
+            cloudData[key] = String(cloudData[key]).trim();
+          }
+        });
+
+        // إذا كان مجموع التغطية 9
+        if (cloudData.totalCover === "9") {
+          // تغيير التغطية الكلية إلى 8
+          cloudData.totalCover = "8";
+
+          // تغيير كافة حقول الكمية والمجموع إلى 8
+          cloudData.cloud1Amount = cloudData.cloud1Amount ? "8" : "";
+          cloudData.cloud2Amount = cloudData.cloud2Amount ? "8" : "";
+          cloudData.cloud3Amount = cloudData.cloud3Amount ? "8" : "";
+          cloudData.cloud4Amount = cloudData.cloud4Amount ? "8" : "";
+          cloudData.cover12 = cloudData.cover12 ? "8" : "";
+          cloudData.cover123 = cloudData.cover123 ? "8" : "";
+        }
+
+        return cloudData;
+      }
+
+      // ============================================
+      // وظيفة تنظيف القيم المعدلة للتصدير العادي
+      // ============================================
+      function cleanValueForExport(value, columnName) {
+        if (value === null || value === undefined) {
+          return ""; // فراغ بدلاً من null أو undefined
+        }
+
+        const strValue = String(value).trim();
+
+        if (
+          strValue === "" ||
+          strValue.toLowerCase() === "nothing" ||
+          strValue.toLowerCase() === "null" ||
+          strValue.toLowerCase() === "undefined"
+        ) {
+          return ""; // فراغ بدلاً من NOTHING
+        }
+
+        if (strValue === "#" || strValue === "##" || strValue === "###") {
+          return ""; // فراغ بدلاً من #
+        }
+
+        // إزالة أي علامات # من النص
+        let cleanedValue = strValue.replace(/#/g, "");
+
+        // تطبيق المعالجات الخاصة حسب نوع الحقل
+        switch (columnName) {
+          case "الرطوبة النسبية %":
+          case "ضـغــط المـحـطـــة":
+          case "الضغط المحول لسطح البحر":
+            cleanedValue = processHumidityPressure(cleanedValue);
+            break;
+
+          case "درجة الحرارة الجافة":
+          case "درجة الحرارة الرطبة":
+          case "درجة الندى لأقرب عشر (سْ)":
+            cleanedValue = processTemperature(cleanedValue);
+            break;
+
+          case "التغطية الكلية للسحب":
+            cleanedValue = processTotalCloudCover(cleanedValue);
+            break;
+        }
+
+        return cleanedValue;
+      }
+
+      // ============================================
+      // وظيفة تنظيف القيم للعرض
+      // ============================================
+      function cleanValue(value) {
+        if (value === null || value === undefined) {
+          return ""; // فراغ بدلاً من null أو undefined
+        }
+
+        const strValue = String(value).trim();
+
+        if (
+          strValue === "" ||
+          strValue.toLowerCase() === "nothing" ||
+          strValue.toLowerCase() === "null" ||
+          strValue.toLowerCase() === "undefined"
+        ) {
+          return ""; // فراغ بدلاً من NOTHING
+        }
+
+        if (strValue === "#" || strValue === "##" || strValue === "###") {
+          return ""; // فراغ بدلاً من #
+        }
+
+        // إزالة أي علامات # من النص
+        return strValue.replace(/#/g, "");
+      }
+
+      // ============================================
+      // وظيفة إنشاء سطر الرموز
+      // ============================================
+      function createSymbolsRow() {
+        // الحصول على عناوين الأعمدة من الجدول
+        const tableHeaders = document.querySelectorAll(
+          "#weather-table thead th",
+        );
+
+        // إنشاء صف الرموز
+        const symbolsRow = document.createElement("tr");
+        symbolsRow.className = "symbols-row";
+
+        // إضافة خلية "الرمز" في العمود الأول
+        const firstCell = document.createElement("td");
+        firstCell.textContent = "الرمز";
+        firstCell.style.fontWeight = "bold";
+        symbolsRow.appendChild(firstCell);
+
+        // إضافة رموز العناصر لكل عمود
+        for (let i = 1; i < tableHeaders.length; i++) {
+          const headerText = tableHeaders[i].textContent.trim();
+          const cell = document.createElement("td");
+
+          // البحث عن الرمز المناسب
+          if (ELEMENT_SYMBOLS[headerText]) {
+            cell.textContent = ELEMENT_SYMBOLS[headerText];
+          } else {
+            cell.textContent = "";
+          }
+
+          symbolsRow.appendChild(cell);
+        }
+
+        // إضافة سطر الرموز كأول صف في الجسم
+        tableBody.appendChild(symbolsRow);
+      }
+
+      // ============================================
+      // وظيفة الاتصال بقاعدة البيانات
+      // ============================================
+      async function connectToDatabase() {
+        try {
+          updateConnectionStatus("connecting", "جاري تحميل مكتبة Supabase...");
+
+          // تحميل مكتبة Supabase أولاً
+          const supabaseLib = await loadSupabaseLibrary();
+
+          updateConnectionStatus(
+            "connecting",
+            "جاري الاتصال بقاعدة البيانات...",
+          );
+
+          // إنشاء عميل Supabase
+          supabaseClient = supabaseLib.createClient(
+            SUPABASE_CONFIG.url,
+            SUPABASE_CONFIG.anonKey,
+            {
+              auth: {
+                persistSession: false,
+              },
+              global: {
+                headers: {
+                  apikey: SUPABASE_CONFIG.anonKey,
+                },
+              },
+            },
+          );
+
+          // اختبار الاتصال بقاعدة البيانات
+          const { data, error } = await supabaseClient
+            .from("hourly_reports")
+            .select("count")
+            .limit(1);
+
+          if (error) {
+            throw error;
+          }
+
+          // الاتصال ناجح
+          isConnected = true;
+          updateConnectionStatus("connected", "متصل بقاعدة البيانات");
+          showMessage("success", "تم الاتصال بنجاح بقاعدة البيانات");
+
+          return true;
+        } catch (error) {
+          console.error("خطأ في الاتصال بقاعدة البيانات:", error);
+          isConnected = false;
+          updateConnectionStatus("disconnected", "غير متصل بقاعدة البيانات");
+          showMessage(
+            "error",
+            `خطأ في الاتصال بقاعدة البيانات: ${error.message}`,
+          );
+
+          // استخدام بيانات تجريبية للاختبار
+          showMessage("warning", "يتم استخدام بيانات تجريبية للاختبار");
+          await loadDemoStations();
+          await loadDemoYears();
+
+          return false;
+        }
+      }
+
+      // ============================================
+      // تحديث حالة الاتصال
+      // ============================================
+      function updateConnectionStatus(status, text) {
+        statusIndicator.className = "connection-status";
+
+        switch (status) {
+          case "connected":
+            statusIndicator.classList.add("connection-connected");
+            break;
+          case "disconnected":
+            statusIndicator.classList.add("connection-disconnected");
+            break;
+          case "connecting":
+            statusIndicator.classList.add("connection-connecting");
+            break;
+        }
+
+        statusText.textContent = text;
+      }
+
+      // ============================================
+      // تحميل بيانات تجريبية (للاختبار)
+      // ============================================
+      async function loadDemoStations() {
+        stations = [
+          "محطة الرياض",
+          "محطة جدة",
+          "محطة الدمام",
+          "محطة مكة",
+          "محطة المدينة",
+        ];
+
+        stationSelect.innerHTML = '<option value="">اختر المحطة...</option>';
+        stations.forEach((station) => {
+          const option = document.createElement("option");
+          option.value = station;
+          option.textContent = station;
+          stationSelect.appendChild(option);
+        });
+      }
+
+      async function loadDemoYears() {
+        const currentYear = new Date().getFullYear();
+        years = [currentYear, currentYear - 1, currentYear - 2];
+
+        yearSelect.innerHTML = '<option value="">اختر السنة...</option>';
+        years.forEach((year) => {
+          const option = document.createElement("option");
+          option.value = year;
+          option.textContent = year;
+          yearSelect.appendChild(option);
+        });
+      }
+
+      // ============================================
+      // تحميل المحطات الحقيقية من قاعدة البيانات
+      // ============================================
+      async function loadStationsFromDB() {
+        if (!isConnected || !supabaseClient) return;
+
+        try {
+          showMessage("info", "جاري تحميل قائمة المحطات...");
+
+          // استعلام للحصول على قائمة المحطات الفريدة
+          const { data, error } = await supabaseClient
+            .from("hourly_reports")
+            .select("station_name")
+            .order("station_name", { ascending: true });
+
+          if (error) throw error;
+
+          // استخراج قائمة المحطات الفريدة
+          stations = [...new Set(data.map((item) => item.station_name))].filter(
+            Boolean,
+          );
+
+          // تعبئة قائمة المحطات
+          stationSelect.innerHTML = '<option value="">اختر المحطة...</option>';
+          stations.forEach((station) => {
+            const option = document.createElement("option");
+            option.value = station;
+            option.textContent = station;
+            stationSelect.appendChild(option);
+          });
+
+          showMessage(
+            "success",
+            `تم تحميل ${stations.length} محطة من قاعدة البيانات`,
+          );
+        } catch (error) {
+          console.error("خطأ في تحميل المحطات:", error);
+          showMessage(
+            "error",
+            `خطأ في تحميل المحطات: ${error.message}. يتم استخدام بيانات تجريبية.`,
+          );
+          await loadDemoStations();
+        }
+      }
+
+      // ============================================
+      // تحميل السنوات الحقيقية من قاعدة البيانات
+      // ============================================
+      async function loadYearsFromDB() {
+        if (!isConnected || !supabaseClient) return;
+
+        try {
+          // استعلام للحصول على قائمة السنوات الفريدة
+          const { data, error } = await supabaseClient
+            .from("hourly_reports")
+            .select("submission_date")
+            .order("submission_date", { ascending: false })
+            .limit(100);
+
+          if (error) throw error;
+
+          // استخراج قائمة السنوات الفريدة
+          const dates = data
+            .map((item) => {
+              try {
+                return new Date(item.submission_date);
+              } catch {
+                return null;
+              }
+            })
+            .filter((date) => date !== null);
+
+          years = [...new Set(dates.map((date) => date.getFullYear()))].sort(
+            (a, b) => b - a,
+          );
+
+          // تعبئة قائمة السنوات
+          yearSelect.innerHTML = '<option value="">اختر السنة...</option>';
+          years.forEach((year) => {
+            const option = document.createElement("option");
+            option.value = year;
+            option.textContent = year;
+            yearSelect.appendChild(option);
+          });
+        } catch (error) {
+          console.error("خطأ في تحميل السنوات:", error);
+          await loadDemoYears();
+        }
+      }
+
+      // ============================================
+      // وظيفة مساعدة للعثور على سجل حسب الوقت (UTC)
+      // ============================================
+      function findRecordByUtcHour(data, utcHour) {
+        const utcHourStr = utcHour.toString().padStart(2, "0");
+
+        // البحث في utc_time
+        let record = data.find((item) => {
+          if (!item.utc_time) return false;
+
+          // التحقق من تنسيقات مختلفة للوقت
+          const itemTime = item.utc_time.toString().trim();
+
+          // إذا كان الوقت يتطابق تماماً
+          if (itemTime === utcHourStr) return true;
+
+          // إذا كان الوقت يحتوي على : (مثال: "21:00")
+          if (itemTime.includes(":")) {
+            const [hours] = itemTime.split(":");
+            return hours.padStart(2, "0") === utcHourStr;
+          }
+
+          // إذا كان الوقت رقمي فقط
+          const itemHourNum = parseInt(itemTime);
+          return !isNaN(itemHourNum) && itemHourNum === utcHour;
+        });
+
+        return record || null;
+      }
+
+      // ============================================
+      // تحميل بيانات الأرصاد الجوية من قاعدة البيانات
+      // ============================================
+      async function loadWeatherDataFromDB(station, date) {
+        if (!isConnected || !supabaseClient) {
+          showMessage("error", "غير متصل بقاعدة البيانات");
+          return [];
+        }
+
+        try {
+          showMessage("info", `جاري تحميل بيانات ${station} لتاريخ ${date}...`);
+
+          // استعلام للحصول على البيانات مرتبة حسب الوقت العالمي (UTC)
+          const { data, error } = await supabaseClient
+            .from("hourly_reports")
+            .select("*")
+            .eq("station_name", station)
+            .eq("submission_date", date)
+            .order("utc_time", { ascending: true });
+
+          if (error) throw error;
+
+          if (data && data.length > 0) {
+            showMessage("success", `تم تحميل ${data.length} سجل بنجاح`);
+
+            // تصفية وتنظيف البيانات
+            const filteredData = data.filter(
+              (item) =>
+                item.utc_time !== null &&
+                item.utc_time !== undefined &&
+                item.utc_time !== "",
+            );
+
+            return filteredData;
+          } else {
+            showMessage("warning", "لا توجد بيانات حقيقية للمعايير المحددة");
+            return [];
+          }
+        } catch (error) {
+          console.error("خطأ في تحميل البيانات:", error);
+          showMessage("error", `خطأ في تحميل البيانات: ${error.message}`);
+          return [];
+        }
+      }
+
+      // ============================================
+      // تحميل بيانات إدارة البيانات الجوية
+      // ============================================
+      async function loadWeatherData() {
+        const station = stationSelect.value;
+        const year = yearSelect.value;
+        const month = monthSelect.value;
+        const day = daySelect.value;
+
+        // التحقق من إدخال البيانات
+        if (!station) {
+          showMessage("error", "يرجى اختيار المحطة");
+          return;
+        }
+
+        if (!year || !month || !day) {
+          showMessage(
+            "error",
+            "يرجى اختيار التاريخ كاملاً (السنة، الشهر، اليوم)",
+          );
+          return;
+        }
+
+        // تشكيل تاريخ البحث
+        const paddedMonth = month.padStart(2, "0");
+        const paddedDay = day.padStart(2, "0");
+        const reportDate = `${year}-${paddedMonth}-${paddedDay}`;
+
+        try {
+          // تحميل البيانات من قاعدة البيانات أو بيانات تجريبية
+          currentData = await loadWeatherDataFromDB(station, reportDate);
+
+          if (currentData && currentData.length > 0) {
+            displayData(currentData);
+          } else {
+            currentData = [];
+            clearTableData();
+            showMessage("warning", "لا توجد بيانات للمعايير المحددة");
+          }
+        } catch (error) {
+          console.error("خطأ في تحميل البيانات:", error);
+          showMessage("error", `خطأ في تحميل البيانات: ${error.message}`);
+        }
+      }
+
+      // ============================================
+      // وظيفة لاستخراج بيانات الخلايا من السجل
+      // ============================================
+      function getCellDataFromRecord(record) {
+        return [
+          record.relative_humidity,
+          record.vapor_pressure,
+          record.dew_point,
+          record.station_pressure,
+          record.sea_level_pressure,
+          record.dry_temp,
+          record.wet_temp,
+          record.wind_direction,
+          record.wind_speed,
+          record.avg_wind_direction,
+          record.avg_wind_speed,
+          record.visibility,
+          record.current_weather,
+          record.past_weather,
+          record.total_cloud_cover,
+          record.cloud1_amount,
+          record.cloud1_type,
+          record.cloud1_height,
+          record.cloud2_amount,
+          record.cloud2_type,
+          record.cloud2_height,
+          record.cover12,
+          record.cloud3_amount,
+          record.cloud3_type,
+          record.cloud3_height,
+          record.cover123,
+          record.cloud4_amount,
+          record.vapor_pressure_diff,
+        ];
+      }
+
+      // ============================================
+      // وظيفة لاستخراج بيانات الخلايا من السجل للتصدير العادي
+      // مع تطبيق المعالجات الخاصة
+      // ============================================
+      function getCellDataForExport(record) {
+        // معالجة بيانات السحب أولاً
+        const cloudData = processCloudData(record);
+
+        // الحصول على عناوين الأعمدة
+        const tableHeaders = document.querySelectorAll(
+          "#weather-table thead th",
+        );
+        const headers = Array.from(tableHeaders).map((th) =>
+          th.textContent.trim(),
+        );
+
+        // استخراج القيم الأساسية
+        const rawValues = [
+          record.relative_humidity,
+          record.vapor_pressure,
+          record.dew_point,
+          record.station_pressure,
+          record.sea_level_pressure,
+          record.dry_temp,
+          record.wet_temp,
+          record.wind_direction,
+          record.wind_speed,
+          record.avg_wind_direction,
+          record.avg_wind_speed,
+          record.visibility,
+          record.current_weather,
+          record.past_weather,
+          cloudData.totalCover,
+          cloudData.cloud1Amount,
+          record.cloud1_type,
+          record.cloud1_height,
+          cloudData.cloud2Amount,
+          record.cloud2_type,
+          record.cloud2_height,
+          cloudData.cover12,
+          cloudData.cloud3Amount,
+          record.cloud3_type,
+          record.cloud3_height,
+          cloudData.cover123,
+          cloudData.cloud4Amount,
+          record.vapor_pressure_diff,
+        ];
+
+        // تطبيق التنظيف والمعالجة الخاصة لكل حقل
+        const processedValues = [];
+        for (let i = 0; i < rawValues.length; i++) {
+          const columnName = headers[i + 1]; // +1 لأن العمود الأول هو وقت الرصد
+          processedValues.push(cleanValueForExport(rawValues[i], columnName));
+        }
+
+        return processedValues;
+      }
+
+      // ============================================
+      // وظيفة لاستخراج بيانات الخلايا من السجل للتصدير المعدل
+      // مع تطبيق المعالجات الخاصة للتصدير المعدل
+      // ============================================
+      function getCellDataForModifiedExport(record) {
+        // معالجة بيانات السحب للتصدير المعدل
+        const cloudData = processCloudDataForModifiedExport(record);
+
+        // الحصول على عناوين الأعمدة
+        const tableHeaders = document.querySelectorAll(
+          "#weather-table thead th",
+        );
+        const headers = Array.from(tableHeaders).map((th) =>
+          th.textContent.trim(),
+        );
+
+        // استخراج القيم الأساسية
+        const rawValues = [
+          record.relative_humidity,
+          record.vapor_pressure,
+          record.dew_point,
+          record.station_pressure,
+          record.sea_level_pressure,
+          record.dry_temp,
+          record.wet_temp,
+          record.wind_direction,
+          record.wind_speed,
+          record.avg_wind_direction,
+          record.avg_wind_speed,
+          record.visibility,
+          record.current_weather,
+          record.past_weather,
+          cloudData.totalCover,
+          cloudData.cloud1Amount,
+          cloudData.cloud1Type,
+          cloudData.cloud1Height,
+          cloudData.cloud2Amount,
+          cloudData.cloud2Type,
+          cloudData.cloud2Height,
+          cloudData.cover12,
+          cloudData.cloud3Amount,
+          cloudData.cloud3Type,
+          cloudData.cloud3Height,
+          cloudData.cover123,
+          cloudData.cloud4Amount,
+          record.vapor_pressure_diff,
+        ];
+
+        // تطبيق التنظيف والمعالجة الخاصة لكل حقل للتصدير المعدل
+        const processedValues = [];
+        for (let i = 0; i < rawValues.length; i++) {
+          const columnName = headers[i + 1]; // +1 لأن العمود الأول هو وقت الرصد
+          processedValues.push(
+            cleanValueForModifiedExport(rawValues[i], columnName),
+          );
+        }
+
+        return processedValues;
+      }
+
+      // ============================================
+      // عرض البيانات في الجدول
+      // وقت الرصد يظهر من 00 إلى 23 (ثابت)
+      // ترتيب البيانات يكون من 21 UTC إلى 20 UTC
+      // ============================================
+      function displayData(data) {
+        // مسح الجدول الحالي
+        clearTableData();
+
+        // إنشاء سطر الرموز إذا لم يكن موجودًا
+        if (!document.querySelector(".symbols-row")) {
+          createSymbolsRow();
+        }
+
+        // تحديد ترتيب عرض البيانات: من 21 UTC إلى 20 UTC
+        const displayHoursUTC = [];
+
+        // من 21 إلى 23 (UTC)
+        for (let hour = 21; hour <= 23; hour++) {
+          displayHoursUTC.push(hour);
+        }
+
+        // من 00 إلى 20 (UTC)
+        for (let hour = 0; hour <= 20; hour++) {
+          displayHoursUTC.push(hour);
+        }
+
+        // عرض البيانات: وقت الرصد يظهر من 00 إلى 23 (ثابت)
+        // البيانات تظهر حسب ترتيب displayHoursUTC
+        let displayIndex = 0;
+
+        // إنشاء الصفوف لكل ساعة من 00 إلى 23
+        for (let displayHour = 0; displayHour <= 23; displayHour++) {
+          const displayHourStr = displayHour.toString().padStart(2, "0");
+
+          // الحصول على الوقت العالمي المقابل لهذا الصف
+          const utcHourForThisRow = displayHoursUTC[displayIndex];
+
+          // البحث عن سجل لهذا الوقت العالمي
+          const record = findRecordByUtcHour(data, utcHourForThisRow);
+
+          // إنشاء صف جديد
+          const row = document.createElement("tr");
+
+          // إضافة وقت الرصد (ثابت: 00 إلى 23)
+          const timeCell = document.createElement("td");
+          timeCell.className = "time-cell";
+          timeCell.textContent = displayHourStr;
+          row.appendChild(timeCell);
+
+          // إضافة البيانات مع تنظيفها
+          if (record) {
+            // الحصول على البيانات من السجل
+            const cellsData = getCellDataFromRecord(record);
+
+            // إضافة الخلايا مع تنظيف القيم
+            cellsData.forEach((value) => {
+              const cell = document.createElement("td");
+              cell.textContent = cleanValue(value);
+              row.appendChild(cell);
+            });
+          } else {
+            // إضافة خلايا فارغة إذا لم توجد بيانات
+            for (let i = 0; i < 28; i++) {
+              const cell = document.createElement("td");
+              cell.textContent = "";
+              row.appendChild(cell);
+            }
+          }
+
+          tableBody.appendChild(row);
+          displayIndex++;
+        }
+      }
+
+      // ============================================
+      // تصدير إلى Excel مطابق للملف الأصلي
+      // ============================================
+      async function exportToExcel() {
+        if (!currentData || currentData.length === 0) {
+          showMessage("error", "لا توجد بيانات للتصدير");
+          return;
+        }
+
+        try {
+          showMessage("info", "جاري إنشاء ملف Excel...");
+
+          // إنشاء مصفوفة البيانات للتصدير
+          const dataForExport = [];
+
+          // الصف الأول: عناوين الأعمدة
+          const headers = [
+            "وقت الرصد",
+            "الرطوبة النسبية %",
+            "ضغط بخار الماء لأقرب عشر الميلبار",
+            "درجة الندى لأقرب عشر (سْ)",
+            "ضـغــط المـحـطـــة",
+            "الضغط المحول لسطح البحر",
+            "درجة الحرارة الجافة",
+            "درجة الحرارة الرطبة",
+            "اتجاه الرياح السطحية بعشرات الدرجات",
+            "سرعة الرياح السطحية لأقرب م/ثا",
+            "اتجاه المتوسط الساعي للرياح السطحية",
+            "سرعة المتوسط الساعي للرياح السطحية",
+            "الرؤية السطحية الأفقية بمئات الأمتار",
+            "الطقس الحاضر",
+            "الطقس الغابر",
+            "التغطية الكلية للسحب",
+            "كمية السحب في الطبقة الأولى",
+            "نوع السحب في الطبقة الأولى",
+            "ارتفاع السحب في الطبقة الأولى",
+            "كمية السحب في الطبقة الثانية",
+            "نوع السحب في الطبقة الثانية",
+            "ارتفاع السحب في الطبقة الثانية",
+            "مجموع التغطية للطبقتين 1+2",
+            "كمية السحب في الطبقة الثالثة",
+            "نوع السحب في الطبقة الثالثة",
+            "ارتفاع السحب في الطبقة الثالثة",
+            "مجموع التغطية للطبقات 1+2+3",
+            "كمية السحب في الطبقة الرابعة",
+            "فرق ضغط بخار الماء عن الإشباع",
+          ];
+
+          dataForExport.push(headers);
+
+          // الصف الثاني: رموز العناصر
+          const symbolsRow = ["الرمز"];
+          for (let i = 1; i < headers.length; i++) {
+            symbolsRow.push(ELEMENT_SYMBOLS[headers[i]] || "");
+          }
+          dataForExport.push(symbolsRow);
+
+          // تحديد ترتيب عرض البيانات: من 21 UTC إلى 20 UTC
+          const displayHoursUTC = [];
+          for (let hour = 21; hour <= 23; hour++) displayHoursUTC.push(hour);
+          for (let hour = 0; hour <= 20; hour++) displayHoursUTC.push(hour);
+
+          // إضافة البيانات: وقت الرصد يظهر من 00 إلى 23
+          // البيانات تظهر حسب ترتيب displayHoursUTC
+          let displayIndex = 0;
+
+          for (let displayHour = 0; displayHour <= 23; displayHour++) {
+            const displayHourStr = displayHour.toString().padStart(2, "0");
+
+            // الحصول على الوقت العالمي المقابل لهذا الصف
+            const utcHourForThisRow = displayHoursUTC[displayIndex];
+
+            // البحث عن سجل لهذا الوقت العالمي
+            const record = findRecordByUtcHour(currentData, utcHourForThisRow);
+
+            const rowData = [displayHourStr];
+
+            if (record) {
+              // جمع البيانات مع تطبيق المعالجات الخاصة
+              const values = getCellDataForExport(record);
+              rowData.push(...values);
+            } else {
+              // إضافة صف فارغ
+              for (let i = 0; i < 28; i++) {
+                rowData.push("");
+              }
+            }
+
+            dataForExport.push(rowData);
+            displayIndex++;
+          }
+
+          // إنشاء ورقة العمل
+          const ws = XLSX.utils.aoa_to_sheet(dataForExport);
+
+          // ضبط عرض الأعمدة
+          const wscols = [];
+          for (let i = 0; i < headers.length; i++) {
+            wscols.push({ wch: 20 });
+          }
+          ws["!cols"] = wscols;
+
+          // إنشاء مصنف
+          const wb = XLSX.utils.book_new();
+          XLSX.utils.book_append_sheet(wb, ws, "بيانات الأرصاد");
+
+          // إنشاء اسم الملف
+          const station = stationSelect.value || "محطة";
+          const year = yearSelect.value || "2026";
+          const month = monthSelect.value || "01";
+          const day = daySelect.value || "01";
+          const fileName = `ساعي_${station}_${year}-${month}-${day}.xlsx`;
+
+          // حفظ الملف
+          XLSX.writeFile(wb, fileName);
+
+          showMessage("success", `تم تصدير الملف ${fileName} بنجاح`);
+        } catch (error) {
+          console.error("خطأ في التصدير إلى Excel:", error);
+          showMessage("error", `خطأ في التصدير إلى Excel: ${error.message}`);
+        }
+      }
+
+      // ============================================
+      // تصدير إلى Excel معدل (مع التعديلات المطلوبة)
+      // ============================================
+      async function exportToModifiedExcel() {
+        if (!currentData || currentData.length === 0) {
+          showMessage("error", "لا توجد بيانات للتصدير");
+          return;
+        }
+
+        try {
+          showMessage("info", "جاري إنشاء ملف Excel المعدل...");
+
+          // إنشاء مصفوفة البيانات للتصدير المعدل
+          const dataForExport = [];
+
+          // الصف الأول: عناوين الأعمدة
+          const headers = [
+            "وقت الرصد",
+            "الرطوبة النسبية %",
+            "ضغط بخار الماء لأقرب عشر الميلبار",
+            "درجة الندى لأقرب عشر (سْ)",
+            "ضـغــط المـحـطـــة",
+            "الضغط المحول لسطح البحر",
+            "درجة الحرارة الجافة",
+            "درجة الحرارة الرطبة",
+            "اتجاه الرياح السطحية بعشرات الدرجات",
+            "سرعة الرياح السطحية لأقرب م/ثا",
+            "اتجاه المتوسط الساعي للرياح السطحية",
+            "سرعة المتوسط الساعي للرياح السطحية",
+            "الرؤية السطحية الأفقية بمئات الأمتار",
+            "الطقس الحاضر",
+            "الطقس الغابر",
+            "التغطية الكلية للسحب",
+            "كمية السحب في الطبقة الأولى",
+            "نوع السحب في الطبقة الأولى",
+            "ارتفاع السحب في الطبقة الأولى",
+            "كمية السحب في الطبقة الثانية",
+            "نوع السحب في الطبقة الثانية",
+            "ارتفاع السحب في الطبقة الثانية",
+            "مجموع التغطية للطبقتين 1+2",
+            "كمية السحب في الطبقة الثالثة",
+            "نوع السحب في الطبقة الثالثة",
+            "ارتفاع السحب في الطبقة الثالثة",
+            "مجموع التغطية للطبقات 1+2+3",
+            "كمية السحب في الطبقة الرابعة",
+            "فرق ضغط بخار الماء عن الإشباع",
+          ];
+
+          dataForExport.push(headers);
+
+          // الصف الثاني: رموز العناصر
+          const symbolsRow = ["الرمز"];
+          for (let i = 1; i < headers.length; i++) {
+            symbolsRow.push(ELEMENT_SYMBOLS[headers[i]] || "");
+          }
+          dataForExport.push(symbolsRow);
+
+          // تحديد ترتيب عرض البيانات: من 21 UTC إلى 20 UTC
+          const displayHoursUTC = [];
+          for (let hour = 21; hour <= 23; hour++) displayHoursUTC.push(hour);
+          for (let hour = 0; hour <= 20; hour++) displayHoursUTC.push(hour);
+
+          // إضافة البيانات: وقت الرصد يظهر من 00 إلى 23
+          // البيانات تظهر حسب ترتيب displayHoursUTC
+          let displayIndex = 0;
+
+          for (let displayHour = 0; displayHour <= 23; displayHour++) {
+            const displayHourStr = displayHour.toString().padStart(2, "0");
+
+            // الحصول على الوقت العالمي المقابل لهذا الصف
+            const utcHourForThisRow = displayHoursUTC[displayIndex];
+
+            // البحث عن سجل لهذا الوقت العالمي
+            const record = findRecordByUtcHour(currentData, utcHourForThisRow);
+
+            // معالجة وقت الرصد: حذف الصفر الأول
+            const processedTime = processTime(displayHourStr);
+
+            const rowData = [processedTime];
+
+            if (record) {
+              // جمع البيانات مع تطبيق المعالجات الخاصة للتصدير المعدل
+              const values = getCellDataForModifiedExport(record);
+              rowData.push(...values);
+            } else {
+              // إضافة صف فارغ
+              for (let i = 0; i < 28; i++) {
+                rowData.push("");
+              }
+            }
+
+            dataForExport.push(rowData);
+            displayIndex++;
+          }
+
+          // إنشاء ورقة العمل
+          const ws = XLSX.utils.aoa_to_sheet(dataForExport);
+
+          // ضبط عرض الأعمدة
+          const wscols = [];
+          for (let i = 0; i < headers.length; i++) {
+            wscols.push({ wch: 20 });
+          }
+          ws["!cols"] = wscols;
+
+          // إنشاء مصنف
+          const wb = XLSX.utils.book_new();
+          XLSX.utils.book_append_sheet(wb, ws, "بيانات الأرصاد المعدلة");
+
+          // إنشاء اسم الملف
+          const station = stationSelect.value || "محطة";
+          const year = yearSelect.value || "2026";
+          const month = monthSelect.value || "01";
+          const day = daySelect.value || "01";
+          const fileName = `ساعي_${station}_${year}-${month}-${day}_معدل.xlsx`;
+
+          // حفظ الملف
+          XLSX.writeFile(wb, fileName);
+
+          showMessage("success", `تم تصدير الملف المعدل ${fileName} بنجاح`);
+        } catch (error) {
+          console.error("خطأ في التصدير إلى Excel المعدل:", error);
+          showMessage(
+            "error",
+            `خطأ في التصدير إلى Excel المعدل: ${error.message}`,
+          );
+        }
+      }
+
+      // ============================================
+      // مسح الجدول
+      // ============================================
+      function clearTableData() {
+        // مسح جميع الصفوف ما عدا سطر الرموز
+        const rows = tableBody.querySelectorAll("tr:not(.symbols-row)");
+        rows.forEach((row) => row.remove());
+      }
+
+      // ============================================
+      // مسح الفلاتر
+      // ============================================
+      function clearFilters() {
+        stationSelect.value = "";
+        yearSelect.value = "";
+        monthSelect.value = "";
+        daySelect.value = "";
+
+        clearTableData();
+        currentData = [];
+
+        // التأكد من وجود سطر الرموز
+        if (!document.querySelector(".symbols-row")) {
+          createSymbolsRow();
+        }
+
+        showMessage("info", "تم مسح الفلاتر. يمكنك اختيار معايير جديدة.");
+      }
+
+      // ============================================
+      // عرض رسالة
+      // ============================================
+      function showMessage(type, text) {
+        // إخفاء الرسائل القديمة
+        const oldMessages = document.querySelectorAll(".message");
+        oldMessages.forEach((msg) => msg.remove());
+
+        // إنشاء رسالة جديدة
+        const message = document.createElement("div");
+        message.className = `message message-${type}`;
+        message.innerHTML = `<i class="fas fa-${getIconForType(type)}"></i> ${text}`;
+
+        document.body.appendChild(message);
+
+        // إزالة الرسالة بعد 5 ثواني
+        setTimeout(() => {
+          if (message.parentNode) {
+            message.style.transition = "opacity 0.5s";
+            message.style.opacity = "0";
+            setTimeout(() => message.remove(), 500);
+          }
+        }, 5000);
+      }
+
+      // الحصول على الأيقونة المناسبة لنوع الرسالة
+      function getIconForType(type) {
+        switch (type) {
+          case "success":
+            return "check-circle";
+          case "error":
+            return "exclamation-circle";
+          case "warning":
+            return "exclamation-triangle";
+          case "info":
+            return "info-circle";
+          default:
+            return "info-circle";
+        }
+      }
+
+      // ============================================
+      // تهيئة التطبيق عند تحميل الصفحة
+      // ============================================
+      document.addEventListener("DOMContentLoaded", async function () {
+        // إنشاء سطر الرموز أولاً
+        createSymbolsRow();
+
+        // عرض رسالة الترحيب
+        showMessage("info", "جاري تهيئة النظام...");
+
+        // الاتصال بقاعدة البيانات
+        const connected = await connectToDatabase();
+
+        if (connected) {
+          // تحميل البيانات الحقيقية من قاعدة البيانات
+          await loadStationsFromDB();
+          await loadYearsFromDB();
+        } else {
+          // استخدام بيانات تجريبية
+          await loadDemoStations();
+          await loadDemoYears();
+        }
+
+        // إضافة مستمعي الأحداث
+        loadDataBtn.addEventListener("click", loadWeatherData);
+        refreshBtn.addEventListener("click", loadWeatherData);
+        exportExcelBtn.addEventListener("click", exportToExcel);
+        exportModifiedBtn.addEventListener("click", exportToModifiedExcel);
+        clearFiltersBtn.addEventListener("click", clearFilters);
+
+        // مستمعي الأحداث للقوائم المنسدلة
+        yearSelect.addEventListener("change", function () {
+          if (this.value) {
+            monthSelect.disabled = false;
+            daySelect.disabled = true;
+            daySelect.innerHTML = '<option value="">اختر اليوم...</option>';
+          }
+        });
+
+        monthSelect.addEventListener("change", function () {
+          if (this.value && yearSelect.value) {
+            daySelect.disabled = false;
+
+            // تحميل قائمة الأيام (تسطير من 1 إلى 31)
+            daySelect.innerHTML = '<option value="">اختر اليوم...</option>';
+            for (let day = 1; day <= 31; day++) {
+              const option = document.createElement("option");
+              option.value = day.toString().padStart(2, "0");
+              option.textContent = day;
+              daySelect.appendChild(option);
+            }
+          }
+        });
+
+        showMessage(
+          "success",
+          "النظام جاهز للاستخدام. يرجى اختيار المحطة والتاريخ لتحميل البيانات.",
+        );
+      });
+    </script>
+  </body>
+</html>
+[file content end]

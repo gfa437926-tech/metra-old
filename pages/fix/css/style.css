@@ -1,0 +1,70 @@
+:root {
+    --primary-color: #0d6efd;
+    --secondary-color: #198754;
+    --accent-color: #fd7e14;
+    --error-color: #dc3545;
+    --dark-blue: #0a58ca;
+    --light-bg: #f8f9fa;
+    --warning-color: #ffc107;
+    --border-color: #dee2e6;
+    --text-muted: #6c757d;
+}
+
+body {
+    font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+    min-height: 100vh;
+    margin: 0;
+    padding: 0;
+    line-height: 1.6;
+    position: relative;
+}
+
+body::before {
+    content: "";
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: url("https://thvnext.bing.com/th/id/OIP.6OZofWdx6-soggrS0aD-ZAHaHa?r=0&cb=ucfimgc2&rs=1&pid=ImgDetMain");
+    background-size: cover;
+    background-position: center;
+    opacity: 0.1;
+    z-index: -1;
+    pointer-events: none;
+}
+
+.main-container {
+    min-height: 100vh;
+    display: none;
+}
+
+.loading-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    flex-direction: column;
+    background-color: rgba(255, 255, 255, 0.9);
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 9999;
+}
+
+.spinner {
+    width: 3rem;
+    height: 3rem;
+}
+
+.error-message {
+    display: none;
+    color: var(--error-color);
+    margin-top: 15px;
+    text-align: center;
+}
+
+/* باقي الأنماط تبقى كما هي من الكود الأصلي */
